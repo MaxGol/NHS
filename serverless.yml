@@ -1,0 +1,205 @@
+service: nhs-chat-bots
+
+provider:
+  region: eu-west-1
+  name: aws
+  runtime: nodejs10.x
+  memorySize: 1536
+  timeout: 7
+  stage: ${opt:stage, 'development'}
+  profile: dolphin-haley-prod
+  environment:
+    STAGE: ${self:provider.stage}
+    SERVICE: ${self:service}
+    GRAPHQL_ENDPOINT: ${file(./env.yml):${self:provider.stage}.GRAPHQL_ENDPOINT}
+    ACCESS_TOKEN_SECRET: ${file(./env.yml):${self:provider.stage}.ACCESS_TOKEN_SECRET}
+    BOT_ACCESS_TOKEN: ${file(./env.yml):${self:provider.stage}.BOT_ACCESS_TOKEN}
+
+functions:
+  pbot:
+    handler: src/server/index.pbot
+    timeout: 10
+    memorySize: 2048
+    events:
+      - http:
+          cors: true
+          method: post
+          path: pbot/webhook/amio
+
+  dbot:
+    handler: src/server/index.dbot
+    timeout: 10
+    memorySize: 2048
+    events:
+      - http:
+          cors: true
+          method: post
+          path: dbot/webhook/amio
+
+  graphql:
+    handler: src/server/index.handler
+    events:
+      - http:
+          path: graphql
+          method: post
+          cors:
+            origin: '*'
+            allowCredentials: true
+      - http:
+          path: graphql
+          method: get
+          cors:
+            origin: '*'
+            allowCredentials: true
+
+resources:
+  Resources:
+    audioContent:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-audio-content
+        AttributeDefinitions:
+          - AttributeName: guid
+            AttributeType: S
+          - AttributeName: approved
+            AttributeType: S
+        KeySchema:
+          - AttributeName: guid
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ApprovedIndex
+            KeySchema:
+              - AttributeName: approved
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          - AttributeName: ttl
+            Enabled: true
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    usersPublic: 
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-users-public
+        AttributeDefinitions:
+          - AttributeName: guid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: guid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    usersDoctors: 
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-users-doctors
+        AttributeDefinitions:
+          - AttributeName: guid
+            AttributeType: S
+        KeySchema:
+          - AttributeName: guid
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+  
+    admin:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-admin
+        AttributeDefinitions:
+          - AttributeName: guid
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: guid
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: EmailIndex
+            KeySchema:
+              - AttributeName: email
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-s3-sync
+  - serverless-plugin-additional-stacks
+  - serverless-prune-plugin
+  - serverless-dynamodb-local
+
+
+custom:
+  additionalStacks:
+    s3:
+      deploy: Before
+      Resources:
+        moderationSiteBucket:
+          Type: AWS::S3::Bucket
+          Properties:
+            BucketName: ${self:service}-${self:provider.stage}-moderation-site-bucket
+            AccessControl: PublicRead
+            WebsiteConfiguration:
+              IndexDocument: index.html
+              ErrorDocument: index.html
+
+        moderationSiteBucketPolicy:
+          Type: AWS::S3::BucketPolicy
+          DependsOn:
+            - moderationSiteBucket
+          Properties:
+            Bucket:
+              Ref: moderationSiteBucket
+            PolicyDocument:
+              Statement:
+                - Sid: PublicReadGetObject
+                  Effect: Allow
+                  Principal: "*"
+                  Action:
+                  - s3:GetObject
+                  Resource: arn:aws:s3:::${self:service}-${self:provider.stage}-moderation-site-bucket/*
+
+  s3Sync:
+    - bucketName: ${self:service}-${self:provider.stage}-moderation-site-bucket
+      localDir: ./build/client/cms
+
+  webpack:
+    includeModules:
+      forceExclude:
+        - aws-sdk
+
+    webpackConfig: ./webpack/server.js
+
+  prune:
+    automatic: true
+    number: 10
+
+  serverless-offline:
+    port: 5003
+
+  dynamodb:
+    stages:
+      - ${self:provider.stage}
+    start:
+      port: 8001
+      inMemory: true
+      migrate: true
+      seed: true

@@ -1,0 +1,15 @@
+authtoken: 1RNJd2ORApAFEw5tPxB6Ozz5uHR_4GqrbKLQnwgJStqQwAyRT
+log: stdout
+log_level: info
+console_ui: false
+region: eu
+tunnels:
+  server:
+    addr: 5003
+    proto: http
+    subdomain: nhs-server
+  # moderation:
+  #   addr: 5001
+  #   proto: http
+  #   subdomain: nhs-moderation
+  #   host_header: localhost:5001

@@ -1,0 +1,157 @@
+@import './fonts';
+
+$background-color: #D7D7D7;
+$upcoming: #85C1E9;
+$live: #ABEBC6;
+$archived: #F5B7B1;
+
+body {
+  background-image: url('https://s3-eu-west-1.amazonaws.com/voxly.client.skills/assets/MOTD/img/grassy-background.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.logo-text-mobile {
+  color: white;
+  font-weight: bold;
+}
+
+.logo-text {
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  margin-left: 10px;
+}
+
+.login-form-wrapper {
+  background-color: $background-color;
+  padding: 10px;
+  border-radius: 5px;
+  opacity: 0.9;
+}
+
+.week-indicator {
+  font-weight: bold;
+  padding: 9.5px 14px;
+  margin-top: 34px;
+  text-align: center;
+  border-radius: 4px;
+  &.upcoming {
+    background-color: $upcoming;
+  }
+  &.live {
+    background-color: $live;
+  }
+  &.archived {
+    background-color: $archived;
+  }
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.question-widget-wrapper {
+  width: 100%;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.question-wrapper {
+  width: 90%;
+  background-color: white;
+  display: inline-block;
+  border-radius: 4px;
+  border: #D7D7D7 solid 1.5px;
+  &.opened {
+    padding: 10px 10px 10px 10px;
+  }
+  &.closed {
+    padding: 10px 10px 10px 10px;
+  }
+}
+
+.question-title {
+  margin-bottom: 0px !important;
+  display: inline-block;
+  width: 80%;
+}
+
+.icon-box {
+  width: 10%;
+  position: absolute;
+  display: inline-block;
+  text-align: center;
+}
+
+.toggle-icon {
+  padding: 5px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  left: 90%;
+  &.off {
+    left: 10%;
+  }
+}
+
+.correct-answer-label {
+  text-align: right;
+  line-height: 15px;
+  margin-bottom: 5px;
+  & .spoken, & .written {
+    text-align: left !important;
+  }
+}
+
+// .radio {
+//   float: right; 
+//   margin-top: 10px; 
+//   margin-right: 15px;
+// }
+
+.answer-grid {
+  margin: 0 !important;
+  margin-right: -10px !important;
+}
+
+.answer-input {
+  width: 100%;
+}
+
+.padding-hr-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.answer-input:nth-child(3) {
+  margin-left: 10px;
+}
+
+.q-form {
+  height: 88vh;
+}
+
+.submit-btn {
+  margin-bottom: 20px;
+}
+
+.report-wrapper {
+  padding-bottom: 30px;
+}
+
+.padding-bottom-0 {
+  padding-bottom: 0 !important;
+}
+
+.padding-top-10 {
+  padding-top: 10px !important;
+}

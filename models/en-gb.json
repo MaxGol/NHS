@@ -1,0 +1,1203 @@
+{
+  "invocation": "match of the day magazine",
+  "intents": [
+    {
+      "name": "PickLevel",
+      "phrases": [
+        "{level}",
+        "i want {level}",
+        "let's have {level}",
+        "how about {level}",
+        "{level} please",
+        "i want {level}",
+        "i want {level} questions",
+        "give me {level} questions",
+        "play {level}",
+        "can i play {level}"
+      ],
+      "inputs": [
+        {
+          "name": "level",
+          "type": "level"
+        }
+      ]
+    },
+    {
+      "name": "WhatTeamCanIPlayFor",
+      "phrases": [
+        "which ones can I play for",
+        "who can I play for",
+        "what teams can I play for",
+        "what clubs can I play for",
+        "what leagues are available",
+        "what teams are available",
+        "what is available",
+        "what teams are there",
+        "who can I be",
+        "who can I represent",
+        "what teams can I represent"
+      ]
+    },
+    {
+      "name": "PickTeam",
+      "phrases": [
+        "i want to play for {team}",
+        "play for {team}",
+        "{team}",
+        "i want to play for the {team}",
+        "play for the {team}",
+        "the {team}",
+        "i want to play for {team} united",
+        "play for {team} united",
+        "{team} united",
+        "i want to play for {team} fc",
+        "play for {team} fc",
+        "{team} fc",
+        "i want to play for fc {team}",
+        "play for fc {team}",
+        "fc {team}",
+        "i want to play for {team} afc",
+        "play for {team} afc",
+        "{team} afc",
+        "i want to play for afc {team}",
+        "play for afc {team}",
+        "afc {team}",
+        "i want to play for {team} city",
+        "play for {team} city",
+        "{team} city",
+        "i want to play for {team} town",
+        "play for {team} town",
+        "{team} town"
+      ],
+      "inputs": [
+        {
+          "name": "team",
+          "type": "team"
+        }
+      ]
+    },
+    {
+      "name": "PractiseIntent",
+      "phrases": [
+        "practice",
+        "practise",
+        "can i practise",
+        "i'd like to practise",
+        "let's practise",
+        "practice please",
+        "training",
+        "training mode",
+        "train",
+        "i want to train",
+        "can i train",
+        "let's train"
+      ]
+    },
+    {
+      "name": "AnswerQuestion",
+      "dialogflow": {
+        "events": [
+          {
+            "name": "actions_intent_OPTION"
+          }
+        ]
+      },
+      "phrases": [
+        "{letter}",
+        "is it {letter}",
+        "it's {letter}",
+        "definitely {letter}"
+      ],
+      "inputs": [
+        {
+          "name": "letter",
+          "type": "letter"
+        }
+      ]
+    },
+    {
+      "name": "DontKnow",
+      "phrases": [
+        "I don't know",
+        "dunno",
+        "I have no idea",
+        "got no idea",
+        "no idea",
+        "god knows",
+        "give up",
+        "I give up",
+        "I haven't the slightest",
+        "I haven't a got a clue",
+        "no clue",
+        "got no clue"
+      ]
+    },
+    {
+      "name": "YesIntent",
+      "alexa": {
+        "name": "AMAZON.YesIntent"
+      },
+      "phrases": [
+        "yes",
+        "yep",
+        "yup",
+        "yah",
+        "yeah",
+        "yes please",
+        "sure",
+        "ok",
+        "correct",
+        "thats right",
+        "yes thats right"
+      ]
+    },
+    {
+      "name": "NoIntent",
+      "alexa": {
+        "name": "AMAZON.NoIntent"
+      },
+      "phrases": [
+        "no",
+        "its not",
+        "no its not",
+        "no its wrong",
+        "no thanks",
+        "nope",
+        "na",
+        "incorrect",
+        "thats wrong",
+        "thats not right"
+      ]
+    },
+    {
+      "name": "HelpIntent",
+      "alexa": {
+        "name": "AMAZON.HelpIntent"
+      },
+      "phrases": [
+        "help",
+        "help me",
+        "help me please",
+        "can you help me",
+        "what can i do"
+      ]
+    },
+    {
+      "name": "RepeatIntent",
+      "alexa": {
+        "name": "AMAZON.RepeatIntent"
+      },
+      "phrases": [
+        "repeat",
+        "what was that",
+        "repeat the question"
+      ]
+    },
+    {
+      "name": "END",
+      "alexa": {
+        "name": "AMAZON.StopIntent"
+      },
+      "phrases": [
+        "stop",
+        "exit",
+        "quit",
+        "end",
+        "finish",
+        "shut up",
+        "take a break",
+        "a break",
+        "come back later",
+        "I'll take a break",
+        "take a break now",
+        "take a break please",
+        "break please",
+        "i'm done training",
+        "i'm done practising",
+        "i'm done"
+      ]
+    }
+  ],
+  "inputTypes" : [
+    {
+      "name": "level",
+      "dialogflow": {
+        "id": "b2082cef-6560-448c-a773-a37e5ff994d7",
+        "isOverridable": true,
+        "isEnum": false,
+        "isRegexp": false,
+        "automatedExpansion": true,
+        "allowFuzzyExtraction": false
+      },
+      "values": [
+        {
+          "value": "easy",
+          "synonyms": [
+            "the sunday league",
+            "sunday league",
+            "sunday",
+            "the easy league",
+            "easy league",
+            "the easy one",
+            "the easier one"
+          ]
+        },
+        {
+          "value": "hard",
+          "synonyms": [
+            "hard league",
+            "the hard league",
+            "the hard one",
+            "the harder one",
+            "pro",
+            "pro league",
+            "the pro league",
+            "professional",
+            "professional league",
+            "the professional league"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "team",
+      "dialogflow": {
+        "id": "e1c89824-3150-4bf6-8874-dbb46dfb9e90",
+        "isOverridable": true,
+        "isEnum": false,
+        "isRegexp": false,
+        "automatedExpansion": true,
+        "allowFuzzyExtraction": false
+      },
+      "values": [
+        {
+          "value": "arsenal",
+          "synonyms": [
+            "gunners",
+            "gooners"
+          ]
+        },
+        {
+          "value": "aston villa",
+          "synonyms": [
+            "villa",
+            "villans"
+          ]
+        },
+        {
+          "value": "bournemouth",
+          "synonyms": [
+            "afc bournemouth",
+            "cherries"
+          ]
+        },
+        {
+          "value": "brighton",
+          "synonyms": [
+            "brighton and hove albion",
+            "seagulls",
+            "gulls",
+            "albion"
+          ]
+        },
+        {
+          "value": "burnley",
+          "synonyms": [
+            "clarets",
+            "clarets"
+          ]
+        },
+        {
+          "value": "chelsea",
+          "synonyms": [
+            "pensioners"
+          ]
+        },
+        {
+          "value": "crystal palace",
+          "synonyms": [
+            "palace",
+            "eagles"
+          ]
+        },
+        {
+          "value": "everton",
+          "synonyms": [
+            "toffees"
+          ]
+        },
+        {
+          "value": "leicester",
+          "synonyms": [
+            "leicester city",
+            "foxes"
+          ]
+        },
+        {
+          "value": "liverpool",
+          "synonyms": []
+        },
+        {
+          "value": "man city",
+          "synonyms": [
+            "manchester city",
+            "city",
+            "sky blues"
+          ]
+        },
+        {
+          "value": "man united",
+          "synonyms": [
+            "manchester united",
+            "man u",
+            "united",
+            "devils",
+            "red devils"
+          ]
+        },
+        {
+          "value": "newcastle",
+          "synonyms": [
+            "newcastle united",
+            "magpies",
+            "geordies"
+          ]
+        },
+        {
+          "value": "norwich",
+          "synonyms": [
+            "norwich city",
+            "canaries",
+            "yellows"
+          ]
+        },
+        {
+          "value": "sheffield united",
+          "synonyms": [
+            "blades",
+            "red and white wizards"
+          ]
+        },
+        {
+          "value": "southampton",
+          "synonyms": [
+            "saints"
+          ]
+        },
+        {
+          "value": "tottenham",
+          "synonyms": [
+            "tottenham hotspur",
+            "spurs",
+            "spuds",
+            "yid army"
+          ]
+        },
+        {
+          "value": "watford",
+          "synonyms": [
+            "hornets"
+          ]
+        },
+        {
+          "value": "west ham",
+          "synonyms": [
+            "west ham united",
+            "irons",
+            "hammers"
+          ]
+        },
+        {
+          "value": "wolves",
+          "synonyms": [
+            "wolverhampton",
+            "wolverhampton wanderers"
+          ]
+        },
+        {
+          "value": "aberdeen",
+          "synonyms": [
+            "dandies",
+            "sheep"
+          ]
+        },
+        {
+          "value": "celtic",
+          "synonyms": [
+            "bhoys",
+            "celts"
+          ]
+        },
+        {
+          "value": "hamilton",
+          "synonyms": [
+            "hamilton academical"
+          ]
+        },
+        {
+          "value": "hearts",
+          "synonyms": [
+            "heart of midlothian",
+            "jam tarts",
+            "maroons"
+          ]
+        },
+        {
+          "value": "hibernian",
+          "synonyms": [
+            "hibs",
+            "hibees",
+            "cabbage"
+          ]
+        },
+        {
+          "value": "kilmarnock",
+          "synonyms": [
+            "killie"
+          ]
+        },
+        {
+          "value": "livingston",
+          "synonyms": []
+        },
+        {
+          "value": "motherwell",
+          "synonyms": [
+            "well",
+            "steelmen",
+            "dossers"
+          ]
+        },
+        {
+          "value": "rangers",
+          "synonyms": [
+            "gers",
+            "teddy bears"
+          ]
+        },
+        {
+          "value": "ross county",
+          "synonyms": [
+            "staggies"
+          ]
+        },
+        {
+          "value": "st johnstone",
+          "synonyms": []
+        },
+        {
+          "value": "st mirren",
+          "synonyms": []
+        },
+        {
+          "value": "barnsley",
+          "synonyms": [
+            "tykes"
+          ]
+        },
+        {
+          "value": "birmingham",
+          "synonyms": [
+            "birmingham city"
+          ]
+        },
+        {
+          "value": "blackburn",
+          "synonyms": [
+            "blackburn rovers",
+            "rovers",
+            "riversiders"
+          ]
+        },
+        {
+          "value": "brentford",
+          "synonyms": [
+            "bees"
+          ]
+        },
+        {
+          "value": "bristol city",
+          "synonyms": [
+            "robins"
+          ]
+        },
+        {
+          "value": "cardiff",
+          "synonyms": [
+            "cardiff city",
+            "bluebirds"
+          ]
+        },
+        {
+          "value": "charlton",
+          "synonyms": [
+            "charlton athletic",
+            "addicks",
+            "valiants"
+          ]
+        },
+        {
+          "value": "derby",
+          "synonyms": [
+            "derby county",
+            "rams"
+          ]
+        },
+        {
+          "value": "fulham",
+          "synonyms": [
+            "cottagers"
+          ]
+        },
+        {
+          "value": "huddersfield",
+          "synonyms": [
+            "huddersfield town",
+            "terriers"
+          ]
+        },
+        {
+          "value": "hull",
+          "synonyms": [
+            "hull city",
+            "tigers"
+          ]
+        },
+        {
+          "value": "leeds",
+          "synonyms": [
+            "leeds united",
+            "peacocks"
+          ]
+        },
+        {
+          "value": "luton",
+          "synonyms": [
+            "luton town",
+            "hatters"
+          ]
+        },
+        {
+          "value": "middlesbrough",
+          "synonyms": [
+            "boro",
+            "smoggies"
+          ]
+        },
+        {
+          "value": "millwall",
+          "synonyms": [
+            "lions"
+          ]
+        },
+        {
+          "value": "nottingham forest",
+          "synonyms": [
+            "forest"
+          ]
+        },
+        {
+          "value": "preston",
+          "synonyms": [
+            "preston north end",
+            "lilywhites"
+          ]
+        },
+        {
+          "value": "qpr",
+          "synonyms": [
+            "queens park rangers",
+            "hoops"
+          ]
+        },
+        {
+          "value": "reading",
+          "synonyms": [
+            "royals"
+          ]
+        },
+        {
+          "value": "sheffield wednesday",
+          "synonyms": [
+            "sheff wed",
+            "owls"
+          ]
+        },
+        {
+          "value": "stoke",
+          "synonyms": [
+            "stoke city",
+            "potters"
+          ]
+        },
+        {
+          "value": "swansea",
+          "synonyms": [
+            "swansea city",
+            "swans"
+          ]
+        },
+        {
+          "value": "west brom",
+          "synonyms": [
+            "west bromwich albion",
+            "baggies"
+          ]
+        },
+        {
+          "value": "wigan",
+          "synonyms": [
+            "wigan athletic",
+            "latics"
+          ]
+        },
+        {
+          "value": "afc wimbledon",
+          "synonyms": [
+            "wimbledon",
+            "dons",
+            "the wombles"
+          ]
+        },
+        {
+          "value": "accrington",
+          "synonyms": [
+            "accrington stanley",
+            "stanley",
+            "accy stanley"
+          ]
+        },
+        {
+          "value": "blackpool",
+          "synonyms": [
+            "seasiders",
+            "the tangerines"
+          ]
+        },
+        {
+          "value": "bolton",
+          "synonyms": [
+            "bolton wanderers",
+            "trotters",
+            "wanderers"
+          ]
+        },
+        {
+          "value": "bristol rovers",
+          "synonyms": [
+            "pirates",
+            "gas"
+          ]
+        },
+        {
+          "value": "burton",
+          "synonyms": [
+            "burton albion",
+            "brewers"
+          ]
+        },
+        {
+          "value": "bury",
+          "synonyms": []
+        },
+        {
+          "value": "coventry",
+          "synonyms": [
+            "coventry city"
+          ]
+        },
+        {
+          "value": "doncaster",
+          "synonyms": [
+            "doncaster rovers",
+            "donny",
+            "vikings"
+          ]
+        },
+        {
+          "value": "fleetwood",
+          "synonyms": [
+            "fleetwood town",
+            "cod army"
+          ]
+        },
+        {
+          "value": "gillingham",
+          "synonyms": [
+            "gills"
+          ]
+        },
+        {
+          "value": "ipswich",
+          "synonyms": [
+            "ipswich town",
+            "tractor boys"
+          ]
+        },
+        {
+          "value": "lincoln",
+          "synonyms": [
+            "lincoln city",
+            "imps"
+          ]
+        },
+        {
+          "value": "mk dons",
+          "synonyms": [
+            "milton keynes",
+            "milton keynes dons"
+          ]
+        },
+        {
+          "value": "oxford",
+          "synonyms": [
+            "oxford united"
+          ]
+        },
+        {
+          "value": "peterborough",
+          "synonyms": [
+            "peterborough united",
+            "posh"
+          ]
+        },
+        {
+          "value": "portsmouth",
+          "synonyms": [
+            "pompey"
+          ]
+        },
+        {
+          "value": "rochdale",
+          "synonyms": [
+            "dale"
+          ]
+        },
+        {
+          "value": "rotherham",
+          "synonyms": [
+            "rotherham united",
+            "millers"
+          ]
+        },
+        {
+          "value": "shrewsbury",
+          "synonyms": [
+            "shrewsbury town",
+            "salop",
+            "shrews"
+          ]
+        },
+        {
+          "value": "southend",
+          "synonyms": [
+            "southend united",
+            "shrimpers",
+            "seasiders"
+          ]
+        },
+        {
+          "value": "sunderland",
+          "synonyms": [
+            "black cats"
+          ]
+        },
+        {
+          "value": "tranmere",
+          "synonyms": [
+            "tranmere rovers"
+          ]
+        },
+        {
+          "value": "wycombe",
+          "synonyms": [
+            "wycombe wanderers",
+            "chairboys"
+          ]
+        },
+        {
+          "value": "bradford",
+          "synonyms": [
+            "bradford city",
+            "bantams",
+            "paraders",
+            "citizens"
+          ]
+        },
+        {
+          "value": "cambridge",
+          "synonyms": [
+            "cambridge united"
+          ]
+        },
+        {
+          "value": "carlisle",
+          "synonyms": [
+            "carlisle united",
+            "cumbrians"
+          ]
+        },
+        {
+          "value": "cheltenham",
+          "synonyms": [
+            "cheltenham town",
+            "robins"
+          ]
+        },
+        {
+          "value": "colchester",
+          "synonyms": [
+            "colchester united"
+          ]
+        },
+        {
+          "value": "crawley",
+          "synonyms": [
+            "crawley town"
+          ]
+        },
+        {
+          "value": "crewe",
+          "synonyms": [
+            "crewe alexandra",
+            "railwaymen"
+          ]
+        },
+        {
+          "value": "exeter",
+          "synonyms": [
+            "exeter city",
+            "grecians"
+          ]
+        },
+        {
+          "value": "forest green",
+          "synonyms": [
+            "forest green rovers"
+          ]
+        },
+        {
+          "value": "grimsby",
+          "synonyms": [
+            "grimsby town",
+            "mariners"
+          ]
+        },
+        {
+          "value": "leyton orient",
+          "synonyms": [
+            "orient"
+          ]
+        },
+        {
+          "value": "macclesfield",
+          "synonyms": [
+            "macclesfield town"
+          ]
+        },
+        {
+          "value": "mansfield",
+          "synonyms": [
+            "mansfield town",
+            "stags"
+          ]
+        },
+        {
+          "value": "morecambe",
+          "synonyms": [
+            "shrimps"
+          ]
+        },
+        {
+          "value": "newport",
+          "synonyms": [
+            "newport county",
+            "exiles",
+            "ironsides"
+          ]
+        },
+        {
+          "value": "northampton",
+          "synonyms": [
+            "northampton town",
+            "cobblers"
+          ]
+        },
+        {
+          "value": "oldham",
+          "synonyms": [
+            "oldham athletic"
+          ]
+        },
+        {
+          "value": "plymouth",
+          "synonyms": [
+            "plymouth argyle",
+            "pilgrims"
+          ]
+        },
+        {
+          "value": "port vale",
+          "synonyms": [
+            "valiants"
+          ]
+        },
+        {
+          "value": "salford",
+          "synonyms": [
+            "salford city",
+            "ammies"
+          ]
+        },
+        {
+          "value": "scunthorpe",
+          "synonyms": [
+            "scunthorpe united"
+          ]
+        },
+        {
+          "value": "stevenage",
+          "synonyms": [
+            "stevenage borough"
+          ]
+        },
+        {
+          "value": "swindon",
+          "synonyms": [
+            "swindon town"
+          ]
+        },
+        {
+          "value": "walsall",
+          "synonyms": []
+        },
+        {
+          "value": "aldershot",
+          "synonyms": [
+            "aldershot town"
+          ]
+        },
+        {
+          "value": "barnet",
+          "synonyms": []
+        },
+        {
+          "value": "barrow",
+          "synonyms": []
+        },
+        {
+          "value": "borehamwood",
+          "synonyms": [
+            "boreham wood",
+            "bore ham wood"
+          ]
+        },
+        {
+          "value": "bromley",
+          "synonyms": []
+        },
+        {
+          "value": "chesterfield",
+          "synonyms": []
+        },
+        {
+          "value": "chorley",
+          "synonyms": []
+        },
+        {
+          "value": "dagenham",
+          "synonyms": [
+            "dagenham and redbridge"
+          ]
+        },
+        {
+          "value": "dover",
+          "synonyms": [
+            "dover athletic"
+          ]
+        },
+        {
+          "value": "eastleigh",
+          "synonyms": []
+        },
+        {
+          "value": "ebbsfleet",
+          "synonyms": [
+            "ebbsfleet united"
+          ]
+        },
+        {
+          "value": "fylde",
+          "synonyms": [
+            "afc fylde"
+          ]
+        },
+        {
+          "value": "halifax",
+          "synonyms": [
+            "halifax town"
+          ]
+        },
+        {
+          "value": "harrogate",
+          "synonyms": [
+            "harrogate town"
+          ]
+        },
+        {
+          "value": "hartlepool",
+          "synonyms": [
+            "hartlepool united"
+          ]
+        },
+        {
+          "value": "maidenhead",
+          "synonyms": [
+            "maidenhead united"
+          ]
+        },
+        {
+          "value": "notts county",
+          "synonyms": []
+        },
+        {
+          "value": "solihull",
+          "synonyms": [
+            "solihull moors"
+          ]
+        },
+        {
+          "value": "stockport",
+          "synonyms": [
+            "stockport county"
+          ]
+        },
+        {
+          "value": "sutton",
+          "synonyms": [
+            "sutton united"
+          ]
+        },
+        {
+          "value": "torquay",
+          "synonyms": [
+            "torquay united"
+          ]
+        },
+        {
+          "value": "woking",
+          "synonyms": []
+        },
+        {
+          "value": "wrexham",
+          "synonyms": []
+        },
+        {
+          "value": "yeovil",
+          "synonyms": [
+            "yeovil town"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "letter",
+      "dialogflow": {
+        "id": "7c9f2fc2-5c66-4bde-8af0-8b96eaec886f",
+        "name": "letter",
+        "isOverridable": true,
+        "isEnum": false,
+        "isRegexp": false,
+        "automatedExpansion": true,
+        "allowFuzzyExtraction": false
+      },
+      "values": [
+        {
+          "value": "a",
+          "synonyms": ["a.", "ay", "aa", "ah", "eh", "ey"]
+        },
+        {
+          "value": "b",
+          "synonyms": ["b.", "bee", "be", "bea"]
+        },
+        {
+          "value": "c",
+          "synonyms": ["c.", "see", "sea", "cee"]
+        }
+      ]
+    }
+  ],
+  "alexa": {
+    "interactionModel": {
+      "languageModel": {
+        "types": [
+          {
+  					"name": "answer",
+  					"values": [
+  						{
+                "id": null,
+  							"name": {
+  								"value": "test",
+  								"synonyms": []
+  							}
+  						}
+  					]
+  				}
+        ],
+        "intents": [
+          {
+            "name": "AMAZON.CancelIntent",
+            "samples": []
+          },
+          {
+            "name": "AMAZON.FallbackIntent",
+            "samples": []
+          },
+          {
+            "name": "AnswerQuestionDynamic",
+            "samples": [
+              "{answer}",
+              "is it {answer}",
+              "it's {answer}",
+              "definitely {answer}",
+              "{number}",
+              "is it {number}",
+              "it's {number}",
+              "definitely {number}"
+            ],
+            "slots": [
+              {
+                "name": "answer",
+                "type": "answer"
+              },
+              {
+                "name": "number",
+                "type": "AMAZON.NUMBER"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "dialogflow": {
+    "intents": [
+      {
+        "name": "Default Fallback Intent",
+        "auto": true,
+        "webhookUsed": true,
+        "fallbackIntent": true
+      },
+      {
+        "name": "Default Welcome Intent",
+        "auto": true,
+        "webhookUsed": true,
+        "events": [
+          {
+            "name": "WELCOME"
+          }
+        ]
+      }
+    ]
+  }
+}
