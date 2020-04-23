@@ -19,11 +19,6 @@ const plugins = [
   new webpack.EnvironmentPlugin({
     STAGE: STAGE,
     SERVICE: SERVERLESS.service,
-    DB_HOST: ENV[`${STAGE}`].DB_HOST,
-    DB_USER: ENV[`${STAGE}`].DB_USER,
-    DB_PASSWORD: ENV[`${STAGE}`].DB_PASSWORD,
-    DB_DATABASE: ENV[`${STAGE}`].DB_PASSWORD,
-    DB_PORT: ENV[`${STAGE}`].DB_PORT,
     GRAPHQL_ENDPOINT: ENV[`${STAGE}`].GRAPHQL_ENDPOINT
   })
 ]

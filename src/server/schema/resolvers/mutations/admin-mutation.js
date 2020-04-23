@@ -1,7 +1,8 @@
 import { ApolloError, UserInputError } from 'apollo-server-lambda'
-import { mysql } from 'database'
 import uuid4 from 'uuid/v4'
 import bcrypt from 'bcryptjs'
+import { docClient } from '../../../database'
+import * as DB from '../../../database/tables'
 
 export const createAdmin = async (parent, args, context, info) => {
   const { admin } = args
@@ -14,8 +15,10 @@ export const createAdmin = async (parent, args, context, info) => {
     password: bcrypt.hashSync(admin.password, 10)
   }
   try {
-    const query = 'INSERT INTO admin SET ?'
-    await mysql.query({ sql: query, values: newAdmin })
+    await docClient.put({
+      TableName: DB.ADMIN,
+      Item: newAdmin
+    }).promise()
     return newAdmin
   } catch (error) {
     console.log(error)

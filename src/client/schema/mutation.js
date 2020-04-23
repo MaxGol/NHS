@@ -7,24 +7,3 @@ export const LOGIN = gql`
     }
   }
 `
-
-export const UPSERT_QUESTIONS = gql`
-  mutation ($questions: [QuestionInput]) {
-    upsertQuestions(questions: $questions) {
-      id
-      weekStartDate
-      league
-      isPracticeQ
-      questionWritten
-      questionSpoken
-      answerAWritten
-      answerASpoken
-      answerBWritten
-      answerBSpoken
-      answerCWritten
-      answerCSpoken
-      correctAnswer
-      isComplete
-    }
-  }
-`

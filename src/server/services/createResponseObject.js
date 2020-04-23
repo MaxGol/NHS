@@ -4,17 +4,36 @@
  * @param {string} channelID - The channelID
  * @param {string} contactID - The contactID
  */
-export default (type = 'text', payload, channelID, contactID) => {
-  const message = {
-    channel: {
-      id: channelID
-    },
-    contact: {
-      id: contactID
-    },
-    content: {
-      type: type,
-      payload: payload
+export default (type, payload, channelID, contactID) => {
+  let message = {}
+  if (type === 'text') {
+    message = {
+      channel: {
+        id: channelID
+      },
+      contact: {
+        id: contactID
+      },
+      content: {
+        type: type,
+        payload: payload
+      }
+    }
+  }
+  if (type === 'image') {
+    message = {
+      channel: {
+        id: channelID
+      },
+      contact: {
+        id: contactID
+      },
+      content: {
+        type: type,
+        payload: {
+          url: payload
+        }
+      }
     }
   }
   return message

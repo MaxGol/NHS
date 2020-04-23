@@ -1,16 +1,25 @@
 import { UserInputError, ApolloError } from 'apollo-server-lambda'
-import { mysql } from 'database'
 import bcrypt from 'bcryptjs'
-import _ from 'lodash'
 import { createAccessToken } from 'auth/auth'
+import { docClient } from '../../../database'
+import * as DB from '../../../database/tables'
 
 export const login = async (parent, args, context, info) => {
   if (!args.email || !args.password) {
     throw new UserInputError('Email address or password not provided', { invalidArgs: Object.keys(args) })
   }
   try {
-    const query = 'SELECT * FROM admin WHERE email = ?'
-    const admin = _.head(await mysql.query({ sql: query, values: args.email }))
+    const params = {
+      TableName: DB.ADMIN,
+      IndexName: DB.ADMIN_EMAIL_INDEX,
+      KeyConditionExpression: 'email = :email',
+      ExpressionAttributeValues: {
+        ':email': args.email
+      },
+      Limit: 1
+    }
+
+    const { Items: [admin] } = await docClient.query(params).promise()
 
     if (!admin) {
       throw new Error('Admin does not exists')

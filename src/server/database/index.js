@@ -1,62 +1,100 @@
 import { DynamoDB } from 'aws-sdk'
+import _ from 'lodash'
+import moment from 'moment'
+import uuid4 from 'uuid/v4'
+import * as DB from './tables'
 
-export const USER_PUBLIC_TABLE = `nhs-chat-bots-${process.env.STAGE}-users-public`
-export const AUDIO_CONTENT_TABLE = `nhs-chat-bots-${process.env.STAGE}-audio-content`
-export const USER_DOCTORS_TABLE = `nhs-chat-bots-${process.env.STAGE}-users-doctors`
-export const ADMIN = `nhs-chat-bots-${process.env.STAGE}-admin`
-const endpoint = process.env.STAGE === 'development' ? 'http://localhost:8001' : undefined
-const docClient = new DynamoDB.DocumentClient({ service: new DynamoDB({ endpoint }) })
+const STAGE = process.env.STAGE
+const endpoint = STAGE === 'development' ? 'http://localhost:8001' : undefined
+const logger = (...args) => {
+  if (STAGE === 'development') console.log('Logger --->', ...args)
+}
+
+export const docClient = new DynamoDB.DocumentClient({ service: new DynamoDB({ endpoint }) })
 
 export const getPublicUser = async (id) => {
   try {
-    const user = await docClient.get({
-      TableName: USER_PUBLIC_TABLE,
+    const response = await docClient.get({
+      TableName: DB.USER_PUBLIC_TABLE,
       Key: {
-        guid: id
+        id: id
       }
     }).promise()
-    return user
+    logger('GET', DB.USER_PUBLIC_TABLE, id)
+    if (_.isEmpty(response)) return {}
+    else return response.Item
   } catch (error) {
     console.log(error)
   }
 }
 
-export const putPublicUser = async (contact, consent) => {
+export const createPublicUser = async (contact) => {
   try {
     await docClient.put({
-      TableName: USER_PUBLIC_TABLE,
+      TableName: DB.USER_PUBLIC_TABLE,
       Item: {
-        guid: contact.id,
+        id: contact.id,
         user: {
           phone: contact.phone,
           name: contact.name,
-          consent: consent,
           created: Date.now()
         }
       }
     }).promise()
+    logger('PUT', DB.USER_PUBLIC_TABLE, contact)
   } catch (error) {
     console.log(error)
   }
 }
 
-// const event = {
-//   event: 'message_received',
-//   timestamp: '2020-04-15T13:21:47.228Z',
-//   data:
-//     {
-//       id: '6656179703726752429',
-//       channel: {
-//         id: '6656110508678857542',
-//         type: 'whatsapp'
-//       },
-//       contact: {
-//         id: '6656127826909748194',
-//         platform_id: '447739365430',
-//         name: 'Max' },
-//       content: {
-//         type: 'text',
-//         payload: 'Test'
-//       }
-//     }
-//   }
+export const updatePublicUser = async (id, prop, value, step) => {
+  try {
+    const user = await docClient.update({
+      TableName: DB.USER_PUBLIC_TABLE,
+      Key: { id },
+      UpdateExpression: `SET #${prop} = :value`,
+      ExpressionAttributeNames: { [`#${prop}`]: `${prop}` },
+      ExpressionAttributeValues: { ':value': `${value}` },
+      ReturnValues: 'UPDATED_NEW'
+    }).promise()
+    logger('UPDATE', DB.USER_PUBLIC_TABLE, id, prop, value, user)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const deletePublicUser = async (id) => {
+  try {
+    await docClient.delete({
+      TableName: DB.USER_PUBLIC_TABLE,
+      Key: { id }
+    }).promise()
+    logger('DELETE', DB.USER_PUBLIC_TABLE, id)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const getAudioContent = async () => {
+  // get audio content for given date
+}
+
+export const saveAudioContent = async (contact, payload) => {
+  const Item = {
+    id: uuid4(),
+    user: contact.id,
+    content: payload.url,
+    approved: false,
+    created: Date.now(),
+    ttl: moment().add('2', 'weeks').unix()
+  }
+  try {
+    await docClient.put({
+      TableName: DB.AUDIO_CONTENT_TABLE,
+      Item
+    }).promise()
+    logger('PUT', DB.AUDIO_CONTENT_TABLE, Item)
+  } catch (error) {
+    console.log(error)
+  }
+}

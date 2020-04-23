@@ -59,13 +59,17 @@ resources:
       Properties:
         TableName: ${self:service}-${self:provider.stage}-audio-content
         AttributeDefinitions:
-          - AttributeName: guid
+          - AttributeName: id
             AttributeType: S
           - AttributeName: approved
             AttributeType: S
+          - AttributeName: created
+            AttributeType: S
         KeySchema:
-          - AttributeName: guid
+          - AttributeName: id
             KeyType: HASH
+          - AttributeName: created
+            KeyType: RANGE
         GlobalSecondaryIndexes:
           - IndexName: ApprovedIndex
             KeySchema:
@@ -88,10 +92,10 @@ resources:
       Properties:
         TableName: ${self:service}-${self:provider.stage}-users-public
         AttributeDefinitions:
-          - AttributeName: guid
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: guid
+          - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -102,10 +106,10 @@ resources:
       Properties:
         TableName: ${self:service}-${self:provider.stage}-users-doctors
         AttributeDefinitions:
-          - AttributeName: guid
+          - AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: guid
+          - AttributeName: id
             KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
@@ -116,12 +120,12 @@ resources:
       Properties:
         TableName: ${self:service}-${self:provider.stage}-admin
         AttributeDefinitions:
-          - AttributeName: guid
+          - AttributeName: id
             AttributeType: S
           - AttributeName: email
             AttributeType: S
         KeySchema:
-          - AttributeName: guid
+          - AttributeName: id
             KeyType: HASH
         GlobalSecondaryIndexes:
           - IndexName: EmailIndex
