@@ -101,8 +101,8 @@ resources:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
         TimeToLiveSpecification:
-          - AttributeName: ttl
-            Enabled: true
+          AttributeName: ttl
+          Enabled: true
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
@@ -175,8 +175,8 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TimeToLiveSpecification:
-          - AttributeName: ttl
-            Enabled: true
+          AttributeName: ttl
+          Enabled: true
 
 
 plugins:
