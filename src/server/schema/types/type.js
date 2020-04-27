@@ -43,3 +43,19 @@ export const LoginResponse = gql`
     accessToken: ID!
   }
 `
+
+export const VoiceRecordInput = gql`
+  input VoiceRecordInput {
+    id: ID!,
+    content: String!,
+    approved: String!
+  }
+`
+
+export const VoiceRecord = gql`
+  type VoiceRecord {
+    id: ID!,
+    content: String!,
+    approved: String!
+  }
+`

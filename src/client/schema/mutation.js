@@ -7,3 +7,13 @@ export const LOGIN = gql`
     }
   }
 `
+
+export const UPDATE_RECORD = gql`
+mutation ($record: VoiceRecordInput) {
+  updateVoiceRecord(record: $record){
+    id
+    approved
+    content
+  }
+}
+`

@@ -61,6 +61,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: user
+            AttributeType: S
           - AttributeName: approved
             AttributeType: S
           - AttributeName: created
@@ -68,12 +70,30 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-          - AttributeName: created
-            KeyType: RANGE
         GlobalSecondaryIndexes:
+          - IndexName: SavedByUserIndex
+            KeySchema:
+              - AttributeName: user
+                KeyType: HASH
+              - AttributeName: created
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
           - IndexName: ApprovedIndex
             KeySchema:
               - AttributeName: approved
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+          - IndexName: CreatedIndex
+            KeySchema:
+              - AttributeName: created
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -140,6 +160,23 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
+    session:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:service}-${self:provider.stage}-session
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TimeToLiveSpecification:
+          - AttributeName: ttl
+            Enabled: true
 
 
 plugins:

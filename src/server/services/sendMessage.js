@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 /**
- * @param {object} message - The message object
+ * @param {data} message - The message object
  */
 
 export default async (data) => {
