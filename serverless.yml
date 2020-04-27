@@ -11,7 +11,6 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     SERVICE: ${self:service}
-    GRAPHQL_ENDPOINT: ${file(./env.yml):${self:provider.stage}.GRAPHQL_ENDPOINT}
     ACCESS_TOKEN_SECRET: ${file(./env.yml):${self:provider.stage}.ACCESS_TOKEN_SECRET}
     BOT_ACCESS_TOKEN: ${file(./env.yml):${self:provider.stage}.BOT_ACCESS_TOKEN}
 
