@@ -43,6 +43,13 @@ export const Dashboard = () => {
     await updateVoiceRecord({ refetchQueries: [{ query: GET_ALL_RECORDS }], variables: { record: newRecord } })
   }
 
+  const prefixedNumber = (num) => {
+    const numLength = `${num}`.split('').length
+    if (numLength === 1) return `00${num}`
+    else if (numLength === 2) return `0${num}`
+    else return `${num}`
+  }
+
   return (
     <Container style={{ height: '100vh', marginTop: '30px' }}>
       {_.map(records, (el, index) => {
@@ -50,7 +57,7 @@ export const Dashboard = () => {
           <Segment loading={loading} tertiary style={{ marginBottom: '10px' }} key={el.id}>
             <Grid>
               <Grid.Row>
-                <Grid.Column width={2} verticalAlign='middle'>NOTE {`00${index + 1}`}</Grid.Column>
+                <Grid.Column width={2} verticalAlign='middle'>NOTE {prefixedNumber(index + 1)}</Grid.Column>
                 <Grid.Column width={11}>
                   <ReactPlayer
                     className='react-player'

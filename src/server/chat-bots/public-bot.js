@@ -21,10 +21,12 @@ const messages = {
   under_age: 'Ok, thanks for letting us know. Unfortunately this service is not available for those under the age of 18. Team up with an adult if you’d like to get involved, or pass on this opportunity to others who might be interested. Thanks again and stay safe! 💖',
   age_verified: 'Excellent! Here’s a few more things to consider before we jump in: \n\n🧐Your voice message will be screened by the creators of this service, before sending it over to our NHS heroes. \n\nWe can’t control or stop recipients forwarding on your voice notes to others. But if they are positive messages, hopefully that’s ok. \n\n🔗Check out more details here: thenationalhopeservice.com \n\nAre you happy to continue? Type Yes if you are.',
   invalid_answer_age: '🤔 Sorry, I’m not sure I understood you. Just type ‘Yes’ of you are over 18 or ‘No’ if you are not yet 18.',
-  consent_yes: 'Time to send a voice-note and brighten someone’s day! They won\'t be able to respond but trust us, it’s amazingly powerful for our NHS heroes to actually hear you speaking your support. \n🙏 Words of wisdom, encouragement or just a simple thank you will all go down a treat! \n\nOver to you...🎤',
+  consent_yes: 'Time to send a voice-note and brighten someone’s day! They won\'t be able to respond but trust us, it’s amazingly powerful for our NHS heroes to actually hear you speaking your support. \n\n🙏 Words of wisdom, encouragement or just a simple thank you will all go down a treat! \n\nOver to you...🎤',
   consent_no: 'No worries, ping us here, if you change your mind. Stay indoors and stay safe.🏠',
   invalid_answer_consent: '🤔 Sorry, I’m not sure I understood you. Are you happy to continue? Just type ‘Yes’ or ‘No’',
-  audio_message_sent_confirmation: 'Thank you 👍 We\'ll make sure the people who really need this get to hear it. You can send us another voice-note anytime. \n\nIn the meantime, stay indoors and stay safe. 💞🏡',
+  audio_message_sent_confirmation_1: 'Thank you 👍 We\'ll make sure the people who really need this get to hear it. Send us another voice note or share this number with others to help us collect as many as possible. ☎️  \n\nIn the meantime, stay indoors and stay safe. 💞🏡',
+  audio_message_sent_confirmation_2: 'Keeping all our key workers\' spirits lifted is so important in this time. You\'ll have just helped them feel less alone. ☎️ Please share this number with others to help us keep collecting these lovely messages for the people who need to hear them.',
+  audio_message_sent_confirmation_3: 'We might be finding a new normal but our key workers\' will be fighting this battle for long time to come. Knowing that they have your support will mean the world 🌍 Thank you.',
   returning_user_entry: '🌈 Let’s spread the love! Record your voice message for our wonderful NHS staff. \n\nJust like last time: \n\n⏱The notes can be up to 20 seconds long \n\n🚨For medical assistance contact your GP, as you won’t be able to reach the NHS through this platform 💖Keep it positive to lift the spirit of those working hard on the frontline. \n\nOver to you 🎤',
   only_three_per_day: 'Thanks for sharing the love! \n💖We can only accept 3 voice notes a day per person. \nCome back again tomorrow to send another if you’d like to though! 🎤',
   different_file_type: '👀 This looks like something else. \n\n For now, you can only send us voice notes up to 20 seconds long. \n Just hold down the record button and then hit send. \n\nGive it another go! 🎤',
@@ -94,7 +96,7 @@ export const pbot = async (event, context) => { // callback
             const message = await createResponseObject('text', messages.under_age, channelID, contact.id)
             await sendMessage(message)
             return deletePublicUser(contact.id)
-          } else if (!user.over18 && _.toUpper(messagePayload) !== 'NO' && !user.over18 && isAnswerYes(messagePayload)) {
+          } else if (!user.over18 && _.toUpper(messagePayload) !== 'NO' && !user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_age, channelID, contact.id)
             return sendMessage(message)
           }
@@ -107,7 +109,7 @@ export const pbot = async (event, context) => { // callback
             const message = await createResponseObject('text', messages.consent_no, channelID, contact.id)
             await sendMessage(message)
             return deletePublicUser(contact.id)
-          } else if (user.over18 && _.toUpper(messagePayload) !== 'NO' && user.over18 && isAnswerYes(messagePayload)) {
+          } else if (user.over18 && _.toUpper(messagePayload) !== 'NO' && user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_consent, channelID, contact.id)
             return sendMessage(message)
           }
@@ -128,15 +130,28 @@ export const pbot = async (event, context) => { // callback
         if (!_.isEmpty(user)) {
           if (user.over18 && user.consent) {
             const records = await getAudioContents(user.id)
-            if (records.Count >= 3) {
+
+            if (records.Count === 0) {
+              await saveAudioContent(contact, messagePayload)
+              const message = createResponseObject('text', messages.audio_message_sent_confirmation_1, channelID, contact.id)
+              return sendMessage(message)
+            }
+            if (records.Count === 1) {
+              await saveAudioContent(contact, messagePayload)
+              const message = createResponseObject('text', messages.audio_message_sent_confirmation_2, channelID, contact.id)
+              return sendMessage(message)
+            }
+            if (records.Count === 2) {
+              await saveAudioContent(contact, messagePayload)
+              const message = createResponseObject('text', messages.audio_message_sent_confirmation_3, channelID, contact.id)
+              return sendMessage(message)
+            }
+            if (records.Count === 3) {
               const message = createResponseObject('text', messages.only_three_per_day, channelID, contact.id)
               return sendMessage(message)
             }
-            await saveAudioContent(contact, messagePayload)
-            const message = createResponseObject('text', messages.audio_message_sent_confirmation, channelID, contact.id)
-            return sendMessage(message)
           } else {
-            const message = await createResponseObject('text', messages.incorrect_answer, channelID, contact.id)
+            const message = await createResponseObject('text', messages.different_file_type, channelID, contact.id)
             return sendMessage(message)
           }
         }
@@ -153,8 +168,3 @@ export const pbot = async (event, context) => { // callback
     body: JSON.stringify({ message: 'success' })
   }
 }
-
-// if (records.Count === 0) {
-//   const message = createResponseObject('text', messages.only_three_per_day, channelID, contact.id)
-//   return sendMessage(message)
-// }
