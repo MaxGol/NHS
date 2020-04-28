@@ -37,7 +37,15 @@ const messages = {
   ]
 }
 
+const responseHandler = (status) => {
+  return {
+    statusCode: status,
+    body: JSON.stringify({ message: 'success' })
+  }
+}
+
 export const pbot = async (event, context) => { // callback
+  context.callbackWaitsForEmptyEventLoop = false
   const request = JSON.parse(event.body)
   try {
     if (request.event === 'message_received') {
@@ -50,10 +58,19 @@ export const pbot = async (event, context) => { // callback
         name: request.data.contact.name
       }
 
+      const user = await getPublicUser(contact.id)
       const session = await getSession(contact.id)
 
       if (!session) {
         await createSession(contact.id)
+      }
+
+      const sendMessageWithDelay = async (fn, param, ms) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve(fn(param))
+          }, ms)
+        })
       }
 
       if (messageType === 'text') {
@@ -61,70 +78,76 @@ export const pbot = async (event, context) => { // callback
           await deletePublicUser(contact.id)
           await deleteAllUserRecords(contact.id)
           await deleteSession(contact.id)
-          return
+          const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
+          await sendMessage(message)
+          return responseHandler('200')
         }
 
-        const user = await getPublicUser(contact.id)
-
         if (_.isEmpty(user)) {
-          const image = await createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
+          const image = createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
+          const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
           await sendMessage(image)
-          setTimeout(() => {
-            const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
-            sendMessage(message)
-          }, 1000)
-          return createPublicUser(contact)
+          await sendMessageWithDelay(sendMessage, message, 1000)
+          await createPublicUser(contact)
+          return responseHandler('200')
         }
 
         if (!_.isEmpty(user)) {
           if (user.over18 && user.consent && session) {
             const random = Math.floor(Math.random() * 3)
             const message = createResponseObject('text', messages.different_file_type_options[random], channelID, contact.id)
-            return sendMessage(message)
+            await sendMessage(message)
+            return responseHandler('200')
           }
 
           if (user.over18 && user.consent) {
             const message = createResponseObject('text', messages.returning_user_entry, channelID, contact.id)
-            return sendMessage(message)
+            await sendMessage(message)
+            return responseHandler('200')
           }
 
           if (!user.over18 && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.age_verified, channelID, contact.id)
             await sendMessage(message)
-            return updatePublicUser(contact.id, 'over18', true)
+            await updatePublicUser(contact.id, 'over18', true)
+            return responseHandler('200')
           } else if (!user.over18 && _.toUpper(messagePayload) === 'NO') {
             const message = await createResponseObject('text', messages.under_age, channelID, contact.id)
             await sendMessage(message)
-            return deletePublicUser(contact.id)
+            await deletePublicUser(contact.id)
+            return responseHandler('200')
           } else if (!user.over18 && _.toUpper(messagePayload) !== 'NO' && !user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_age, channelID, contact.id)
-            return sendMessage(message)
+            await sendMessage(message)
+            return responseHandler('200')
           }
 
           if (user.over18 && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.consent_yes, channelID, contact.id)
             await sendMessage(message)
-            return updatePublicUser(contact.id, 'consent', true)
+            await updatePublicUser(contact.id, 'consent', true)
+            return responseHandler('200')
           } else if (user.over18 && _.toUpper(messagePayload) === 'NO') {
             const message = await createResponseObject('text', messages.consent_no, channelID, contact.id)
             await sendMessage(message)
-            return deletePublicUser(contact.id)
+            await deletePublicUser(contact.id)
+            return responseHandler('200')
           } else if (user.over18 && _.toUpper(messagePayload) !== 'NO' && user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_consent, channelID, contact.id)
-            return sendMessage(message)
+            await sendMessage(message)
+            return responseHandler('200')
           }
         }
       } else if (messageType === 'audio') {
         const user = await getPublicUser(contact.id)
 
         if (_.isEmpty(user)) {
-          const image = await createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
+          const image = createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
+          const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
           await sendMessage(image)
-          setTimeout(() => {
-            const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
-            sendMessage(message)
-          }, 1000)
-          return createPublicUser(contact)
+          await sendMessageWithDelay(sendMessage, message, 1000)
+          await createPublicUser(contact)
+          return responseHandler('200')
         }
 
         if (!_.isEmpty(user)) {
@@ -134,37 +157,43 @@ export const pbot = async (event, context) => { // callback
             if (records.Count === 0) {
               await saveAudioContent(contact, messagePayload)
               const message = createResponseObject('text', messages.audio_message_sent_confirmation_1, channelID, contact.id)
-              return sendMessage(message)
+              await sendMessage(message)
+              return responseHandler('200')
             }
             if (records.Count === 1) {
               await saveAudioContent(contact, messagePayload)
               const message = createResponseObject('text', messages.audio_message_sent_confirmation_2, channelID, contact.id)
-              return sendMessage(message)
+              await sendMessage(message)
+              return responseHandler('200')
             }
             if (records.Count === 2) {
               await saveAudioContent(contact, messagePayload)
               const message = createResponseObject('text', messages.audio_message_sent_confirmation_3, channelID, contact.id)
-              return sendMessage(message)
+              await sendMessage(message)
+              return responseHandler('200')
             }
             if (records.Count === 3) {
               const message = createResponseObject('text', messages.only_three_per_day, channelID, contact.id)
-              return sendMessage(message)
+              await sendMessage(message)
+              return responseHandler('200')
             }
           } else {
             const message = await createResponseObject('text', messages.different_file_type, channelID, contact.id)
-            return sendMessage(message)
+            await sendMessage(message)
+            return responseHandler('200')
           }
         }
       } else {
         const message = await createResponseObject('text', messages.different_file_type, channelID, contact.id)
-        return sendMessage(message)
+        await sendMessage(message)
+        return responseHandler('200')
       }
+    } else {
+      return responseHandler('200')
     }
   } catch (error) {
     console.log(error)
+    return responseHandler('400')
   }
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ message: 'success' })
-  }
+  return responseHandler('200')
 }
