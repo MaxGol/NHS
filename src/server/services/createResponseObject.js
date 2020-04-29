@@ -20,7 +20,7 @@ export default (type, payload, channelID, contactID) => {
       }
     }
   }
-  if (type === 'image') {
+  if (type === 'image' || type === 'audio' || type === 'file') {
     message = {
       channel: {
         id: channelID

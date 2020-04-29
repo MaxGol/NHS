@@ -3,10 +3,10 @@ import sendMessage from '../services/sendMessage'
 import isAnswerYes from '../services/isAnswerYes'
 import _ from 'lodash'
 import {
-  getPublicUser,
-  createPublicUser,
-  deletePublicUser,
-  updatePublicUser,
+  getUser,
+  createUser,
+  deleteUser,
+  updateUser,
   saveAudioContent,
   getAudioContents,
   deleteAllUserRecords,
@@ -14,6 +14,7 @@ import {
   getSession,
   deleteSession
 } from '../database'
+import * as DB from '../database/tables'
 
 const messages = {
   first_time_user_image: 'https://s3-eu-west-1.amazonaws.com/voxly.client.skills/assets/NHS-BOTS/img/welcome_img.png',
@@ -58,7 +59,7 @@ export const pbot = async (event, context) => { // callback
         name: request.data.contact.name
       }
 
-      const user = await getPublicUser(contact.id)
+      const user = await getUser(DB.USER_PUBLIC_TABLE, contact.id)
       const session = await getSession(contact.id)
 
       if (!session) {
@@ -75,7 +76,7 @@ export const pbot = async (event, context) => { // callback
 
       if (messageType === 'text') {
         if (_.toUpper(messagePayload) === 'DELETE') {
-          await deletePublicUser(contact.id)
+          await deleteUser(DB.USER_PUBLIC_TABLE, contact.id)
           await deleteAllUserRecords(contact.id)
           await deleteSession(contact.id)
           const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
@@ -88,7 +89,7 @@ export const pbot = async (event, context) => { // callback
           const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
           await sendMessage(image)
           await sendMessageWithDelay(sendMessage, message, 1000)
-          await createPublicUser(contact)
+          await createUser(DB.USER_PUBLIC_TABLE, contact)
           return responseHandler('200')
         }
 
@@ -109,12 +110,12 @@ export const pbot = async (event, context) => { // callback
           if (!user.over18 && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.age_verified, channelID, contact.id)
             await sendMessage(message)
-            await updatePublicUser(contact.id, 'over18', true)
+            await updateUser(DB.USER_PUBLIC_TABLE, contact.id, 'over18', true)
             return responseHandler('200')
           } else if (!user.over18 && _.toUpper(messagePayload) === 'NO') {
             const message = await createResponseObject('text', messages.under_age, channelID, contact.id)
             await sendMessage(message)
-            await deletePublicUser(contact.id)
+            await deleteUser(DB.USER_PUBLIC_TABLE, contact.id)
             return responseHandler('200')
           } else if (!user.over18 && _.toUpper(messagePayload) !== 'NO' && !user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_age, channelID, contact.id)
@@ -125,12 +126,12 @@ export const pbot = async (event, context) => { // callback
           if (user.over18 && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.consent_yes, channelID, contact.id)
             await sendMessage(message)
-            await updatePublicUser(contact.id, 'consent', true)
+            await updateUser(DB.USER_PUBLIC_TABLE, contact.id, 'consent', true)
             return responseHandler('200')
           } else if (user.over18 && _.toUpper(messagePayload) === 'NO') {
             const message = await createResponseObject('text', messages.consent_no, channelID, contact.id)
             await sendMessage(message)
-            await deletePublicUser(contact.id)
+            await deleteUser(DB.USER_PUBLIC_TABLE, contact.id)
             return responseHandler('200')
           } else if (user.over18 && _.toUpper(messagePayload) !== 'NO' && user.over18 && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_consent, channelID, contact.id)
@@ -139,14 +140,14 @@ export const pbot = async (event, context) => { // callback
           }
         }
       } else if (messageType === 'audio') {
-        const user = await getPublicUser(contact.id)
+        const user = await getUser(DB.USER_PUBLIC_TABLE, contact.id)
 
         if (_.isEmpty(user)) {
           const image = createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
           const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
           await sendMessage(image)
           await sendMessageWithDelay(sendMessage, message, 1000)
-          await createPublicUser(contact)
+          await createUser(DB.USER_PUBLIC_TABLE, contact)
           return responseHandler('200')
         }
 

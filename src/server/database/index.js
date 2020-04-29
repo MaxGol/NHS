@@ -12,10 +12,10 @@ export const logger = (...args) => {
 
 export const docClient = new DynamoDB.DocumentClient({ service: new DynamoDB({ endpoint }), convertEmptyValues: true }) // convertEmptyValues set to true
 
-export const createPublicUser = async (contact) => {
+export const createUser = async (table, contact) => {
   try {
     await docClient.put({
-      TableName: DB.USER_PUBLIC_TABLE,
+      TableName: table,
       Item: {
         id: contact.id,
         user: {
@@ -25,21 +25,21 @@ export const createPublicUser = async (contact) => {
         }
       }
     }).promise()
-    logger('PUT', DB.USER_PUBLIC_TABLE)
+    logger('PUT', table)
   } catch (error) {
     console.log(error)
   }
 }
 
-export const getPublicUser = async (id) => {
+export const getUser = async (table, id) => {
   try {
     const response = await docClient.get({
-      TableName: DB.USER_PUBLIC_TABLE,
+      TableName: table,
       Key: {
         id: id
       }
     }).promise()
-    logger('GET', DB.USER_PUBLIC_TABLE)
+    logger('GET', table)
     if (_.isEmpty(response)) return {}
     else return response.Item
   } catch (error) {
@@ -47,29 +47,29 @@ export const getPublicUser = async (id) => {
   }
 }
 
-export const updatePublicUser = async (id, prop, value) => {
+export const updateUser = async (table, id, prop, value) => {
   try {
     await docClient.update({
-      TableName: DB.USER_PUBLIC_TABLE,
+      TableName: table,
       Key: { id },
       UpdateExpression: `SET #${prop} = :value`,
       ExpressionAttributeNames: { [`#${prop}`]: `${prop}` },
-      ExpressionAttributeValues: { ':value': `${value}` },
+      ExpressionAttributeValues: { ':value': value },
       ReturnValues: 'UPDATED_NEW'
     }).promise()
-    logger('UPDATE', DB.USER_PUBLIC_TABLE)
+    logger('UPDATE', table)
   } catch (error) {
     console.log(error)
   }
 }
 
-export const deletePublicUser = async (id) => {
+export const deleteUser = async (table, id) => {
   try {
     await docClient.delete({
-      TableName: DB.USER_PUBLIC_TABLE,
+      TableName: table,
       Key: { id }
     }).promise()
-    logger('DELETE', DB.USER_PUBLIC_TABLE)
+    logger('DELETE', table)
   } catch (error) {
     console.log(error)
   }
@@ -116,6 +116,28 @@ export const getAudioContents = async (user) => {
   }
 }
 
+export const getApprovedAudioContent = async (records = []) => {
+  try {
+    const query = await docClient.query({
+      TableName: DB.AUDIO_CONTENT_TABLE,
+      IndexName: DB.APPROVED_CONTENT_INDEX,
+      KeyConditionExpression: '#approved = :approved',
+      ExpressionAttributeNames: {
+        '#approved': 'approved'
+      },
+      ExpressionAttributeValues: {
+        ':approved': '1'
+      }
+    }).promise()
+    logger('QUERY', DB.AUDIO_CONTENT_TABLE)
+    const filteredRecords = _.filter(query.Items, (record) => !_.includes(records, record.id))
+    if (filteredRecords.length) return filteredRecords[0]
+    if (!records.length || !filteredRecords.length) return query.Items[0]
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export const deleteAudioRecord = async (id) => {
   try {
     await docClient.delete({
@@ -145,10 +167,32 @@ export const createSession = async (id, data) => {
         id,
         created: Date.now(),
         ...data,
-        ttl: moment().add('10', 'minutes').unix() // change to 1 hour
+        ttl: moment().add('1', 'hour').unix()
       }
     }).promise()
     logger('PUT', DB.SESSION)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const updateSession = async (id, prop, value) => {
+  try {
+    await docClient.update({
+      TableName: DB.SESSION,
+      Key: { id },
+      UpdateExpression: `SET #ttl = :newTTL, #${prop} = :value`,
+      ExpressionAttributeNames: {
+        [`#${prop}`]: `${prop}`,
+        '#ttl': 'ttl'
+      },
+      ExpressionAttributeValues: {
+        ':value': `${value}`,
+        ':newTTL': moment().add('1', 'hour').unix()
+      },
+      ReturnValues: 'UPDATED_NEW'
+    }).promise()
+    logger('UPDATE', DB.SESSION)
   } catch (error) {
     console.log(error)
   }
@@ -164,7 +208,7 @@ export const getSession = async (id) => {
     }).promise()
     logger('GET', DB.SESSION)
     if (_.isEmpty(response)) return false
-    if (moment().unix() - response.Item.ttl > 600) return false // change to less then 60 mins
+    if (response.Item.ttl - moment().unix() <= 0) return false
     else return response.Item
   } catch (error) {
     console.log(error)
