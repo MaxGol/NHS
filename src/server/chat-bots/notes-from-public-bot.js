@@ -121,8 +121,6 @@ export const dbot = async (event, context) => {
             if (_.isEmpty(record)) {
               const message = createResponseObject('text', messages.no_records, channelID, contact.id)
               await sendMessage(message)
-              const finalMessage = createResponseObject('text', messages.end_of_registration, channelID, contact.id)
-              await sendMessageWithDelay(sendMessage, finalMessage, 1000)
               return responseHandler('200')
             } else {
               const audio = createResponseObject('audio', record.content, channelID, contact.id)
@@ -140,8 +138,6 @@ export const dbot = async (event, context) => {
               if (_.isEmpty(record)) {
                 const message = createResponseObject('text', messages.no_records, channelID, contact.id)
                 await sendMessage(message)
-                const finalMessage = createResponseObject('text', messages.end_of_registration, channelID, contact.id)
-                await sendMessageWithDelay(sendMessage, finalMessage, 1000)
                 return responseHandler('200')
               } else {
                 const audio = createResponseObject('audio', record.content, channelID, contact.id)
