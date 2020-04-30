@@ -11,17 +11,25 @@ AWS.config.update(config)
 
 const fileContent = fs.readFileSync('./src/server/services/email/nhs_verification.html', 'utf8')
 
+const TemplateName = 'nhs_verification'
+
 var params = {
   Template: {
-    TemplateName: 'nhs_verification',
+    TemplateName,
     HtmlPart: fileContent,
     SubjectPart: 'verification - do not reply',
     TextPart: 'Notes from the Nation verification code {{verification_code}}'
   }
 }
 
-var templatePromise = new AWS.SES({ apiVersion: '2010-12-01' }).createTemplate(params).promise()
-
-templatePromise
-  .then((data) => { console.log(data) })
-  .catch((err) => { console.error(err, err.stack) })
+var templatePromise = new AWS.SES({ apiVersion: '2010-12-01' }).deleteTemplate({ TemplateName }).promise()
+console.log(templatePromise)
+templatePromise.then(
+  function (data) {
+    var templatePromise = new AWS.SES({ apiVersion: '2010-12-01' }).createTemplate(params).promise()
+    console.log(templatePromise)
+    templatePromise.then(
+      function (data) {
+        console.log(data)
+      })
+  })

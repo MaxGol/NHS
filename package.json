@@ -30,6 +30,7 @@
     "apollo-link-http": "^1.5.16",
     "apollo-server-lambda": "^2.9.13",
     "aws-sdk": "^2.658.0",
+    "aws-xray-sdk": "^3.0.0",
     "axios": "^0.19.1",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^3.0.7",

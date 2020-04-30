@@ -7,6 +7,7 @@ const responseHandler = (resolve, reject) => (error, data) => {
     reject(error)
   } else {
     console.log(error)
+    console.log(data)
     resolve(data)
   }
 }
@@ -18,7 +19,7 @@ const config = {
 }
 
 const endpoint = process.env.STAGE === 'development' ? `https://email.${config.region}.amazonaws.com` : undefined
-const ses = new SES({ ...config.aws, endpoint })
+const ses = new SES({ ...config, endpoint })
 // AWSXRay.captureAWSClient(ses)
 
 const generateDestination = (ToAddresses = [], BccAddresses = [], CcAddresses = []) => {
@@ -29,8 +30,8 @@ const generateDestination = (ToAddresses = [], BccAddresses = [], CcAddresses = 
   }
 }
 
-export const sendVerificationEmail = (emailAddress, data) =>
-  new Promise((resolve, reject) => {
+export const sendVerificationEmail = (emailAddress, data) => {
+  const promise = new Promise((resolve, reject) => {
     ses.sendTemplatedEmail({
       Destination: generateDestination([emailAddress]),
       Source: 'support@thenationalhopeservice.com',
@@ -40,3 +41,5 @@ export const sendVerificationEmail = (emailAddress, data) =>
       })
     }, responseHandler(resolve, reject))
   })
+  return promise
+}

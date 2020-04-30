@@ -16,7 +16,7 @@ import {
 import * as DB from '../database/tables'
 import randomize from 'randomatic'
 import { validate } from 'email-validator'
-// import { sendVerificationEmail } from '../services/email/sendVerificationEmail'
+import { sendVerificationEmail } from '../services/email/sendVerificationEmail'
 
 const validEmailDomains = ['nhs.net', 'nhs.uk', 'hscni.net', 'hscni.net', 'scot.nhs.net', 'wales.nhs.et', 'voxlydigital.com']
 
@@ -32,7 +32,8 @@ const messages = {
   email_error_3: 'Sorry, unless you have a valid @nhs email you can\'t access this service',
   verification_code_valid: '✅ Perfect! We’ve already got a note ready for you...',
   verification_code_invalid: '❌ This validation code do not much. Please try again.',
-  end_of_registration: 'Hopefully that brightened your day a bit. Whenever you want to hear another one, just send an emoji. Keep going, you are incredible! 🌈'
+  end_of_registration: 'Hopefully that brightened your day a bit. Whenever you want to hear another one, just send an emoji. Keep going, you are incredible! 🌈',
+  incorrect_message_type: 'At the moment we only accept text messages. Thank you.'
 }
 
 const domainCheck = (email) => {
@@ -81,7 +82,8 @@ export const dbot = async (event, context) => {
       const user = await getUser(DB.USER_DOCTORS_TABLE, contact.id)
       const session = await getSession(contact.id)
 
-      console.log('--------------> USER', user, '--------------> SESSION', session)
+      console.log('--------------> USER', user)
+      console.log('--------------> SESSION', session)
 
       if (!session) await createSession(contact.id, { user })
       else await updateSession(contact.id, 'user', user)
@@ -123,10 +125,9 @@ export const dbot = async (event, context) => {
             const messageCheck = emailValidationCheck(messagePayload)
             if (messageCheck.check) {
               const verificationCode = randomize('0', 5)
-              console.log('---------------->', verificationCode)
               await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'verificationCode', verificationCode)
               await updateSession(contact.id, 'verificationCode', verificationCode)
-              // sendVerificationEmail(messagePayload, verificationCode)
+              await sendVerificationEmail(messagePayload, verificationCode)
               const message = await createResponseObject('text', messageCheck.message, channelID, contact.id)
               await sendMessage(message)
               return responseHandler('200')
@@ -159,6 +160,19 @@ export const dbot = async (event, context) => {
           await sendMessage(image)
           await sendMessageWithDelay(sendMessage, message, 1000)
           await createUser(DB.USER_DOCTORS_TABLE, contact)
+          return responseHandler('200')
+        }
+      } else if (messageType !== 'text') {
+        if (_.isEmpty(user)) {
+          const image = createResponseObject('image', messages.first_time_user_image, channelID, contact.id)
+          const message = createResponseObject('text', messages.first_time_user_greeting, channelID, contact.id)
+          await sendMessage(image)
+          await sendMessageWithDelay(sendMessage, message, 1000)
+          await createUser(DB.USER_DOCTORS_TABLE, contact)
+          return responseHandler('200')
+        } else {
+          const message = createResponseObject('text', messages.incorrect_message_type, channelID, contact.id)
+          await sendMessage(message)
           return responseHandler('200')
         }
       }
