@@ -76,8 +76,8 @@ export const pbot = async (event, context) => { // callback
 
       if (messageType === 'text') {
         if (_.toUpper(messagePayload) === 'DELETE') {
-          await deleteUser(DB.USER_PUBLIC_TABLE, contact.id)
           await deleteAllUserRecords(contact.id)
+          await deleteUser(DB.USER_PUBLIC_TABLE, contact.id)
           await deleteSession(contact.id)
           const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
           await sendMessage(message)
