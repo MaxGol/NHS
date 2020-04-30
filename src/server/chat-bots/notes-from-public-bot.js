@@ -33,7 +33,8 @@ const messages = {
   verification_code_valid: '✅ Perfect! We’ve already got a note ready for you...',
   verification_code_invalid: '❌ This validation code do not much. Please try again.',
   end_of_registration: 'Hopefully that brightened your day a bit. Whenever you want to hear another one, just send an emoji. Keep going, you are incredible! 🌈',
-  incorrect_message_type: 'At the moment we only accept text messages. Thank you.'
+  incorrect_message_type: 'At the moment we only accept text messages. Thank you.',
+  no_records: 'Unfortunatelly there are no records at the moment. Try another time.'
 }
 
 const domainCheck = (email) => {
@@ -117,6 +118,10 @@ export const dbot = async (event, context) => {
 
           if (user.consent && user.verificationCode && user.validation) {
             const record = await getApprovedAudioContent(user.records)
+            if (_.isEmpty(record)) {
+              const message = createResponseObject('text', messages.no_records, channelID, contact.id)
+              await sendMessage(message)
+            }
             const audio = createResponseObject('audio', record.content, channelID, contact.id)
             await sendMessage(audio)
             await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [...user.records, record.id])

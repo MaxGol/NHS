@@ -8,8 +8,8 @@ tunnels:
     addr: 5003
     proto: http
     subdomain: nhs-server
-  # moderation:
-  #   addr: 5001
-  #   proto: http
-  #   subdomain: nhs-moderation
-  #   host_header: localhost:5001
+  moderation:
+    addr: 5001
+    proto: http
+    subdomain: nhs-moderation
+    host_header: localhost:5001
