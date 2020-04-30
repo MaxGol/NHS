@@ -12,6 +12,7 @@ import {
   deleteAllUserRecords,
   createSession,
   getSession,
+  updateSession,
   deleteSession
 } from '../database'
 import * as DB from '../database/tables'
@@ -62,9 +63,11 @@ export const pbot = async (event, context) => { // callback
       const user = await getUser(DB.USER_PUBLIC_TABLE, contact.id)
       const session = await getSession(contact.id)
 
-      if (!session) {
-        await createSession(contact.id)
-      }
+      console.log('--------------> USER', user)
+      console.log('--------------> SESSION', session)
+
+      if (!session) await createSession(contact.id, { user })
+      else await updateSession(contact.id, 'user', user)
 
       const sendMessageWithDelay = async (fn, param, ms) => {
         return new Promise((resolve) => {
