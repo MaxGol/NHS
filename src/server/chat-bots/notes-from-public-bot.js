@@ -190,6 +190,8 @@ export const dbot = async (event, context) => {
           return responseHandler('200')
         }
       }
+    } else {
+      return responseHandler('200')
     }
   } catch (error) {
     console.log(error)
