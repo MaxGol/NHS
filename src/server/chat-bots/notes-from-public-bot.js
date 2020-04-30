@@ -121,11 +121,12 @@ export const dbot = async (event, context) => {
             if (_.isEmpty(record)) {
               const message = createResponseObject('text', messages.no_records, channelID, contact.id)
               await sendMessage(message)
+            } else {
+              const audio = createResponseObject('audio', record.content, channelID, contact.id)
+              await sendMessage(audio)
+              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [...user.records, record.id])
+              return responseHandler('200')
             }
-            const audio = createResponseObject('audio', record.content, channelID, contact.id)
-            await sendMessage(audio)
-            await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [...user.records, record.id])
-            return responseHandler('200')
           } else if (user.consent && !user.verificationCode) {
             const messageCheck = emailValidationCheck(messagePayload)
             if (messageCheck.check) {
@@ -148,12 +149,17 @@ export const dbot = async (event, context) => {
               const message = createResponseObject('text', messages.verification_code_valid, channelID, contact.id)
               await sendMessage(message)
               const record = await getApprovedAudioContent(user.records)
-              const audio = createResponseObject('audio', record.content, channelID, contact.id)
-              await sendMessage(audio)
-              const finalMessage = createResponseObject('text', messages.end_of_registration, channelID, contact.id)
-              await sendMessageWithDelay(sendMessage, finalMessage, 1000)
-              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [record.id])
-              return responseHandler('200')
+              if (_.isEmpty(record)) {
+                const message = createResponseObject('text', messages.no_records, channelID, contact.id)
+                await sendMessage(message)
+              } else {
+                const audio = createResponseObject('audio', record.content, channelID, contact.id)
+                await sendMessage(audio)
+                const finalMessage = createResponseObject('text', messages.end_of_registration, channelID, contact.id)
+                await sendMessageWithDelay(sendMessage, finalMessage, 1000)
+                await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [record.id])
+                return responseHandler('200')
+              }
             } else {
               const message = createResponseObject('text', messages.verification_code_invalid, channelID, contact.id)
               await sendMessage(message)
