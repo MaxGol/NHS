@@ -137,7 +137,7 @@ export const getApprovedAudioContent = async (records) => {
         return filteredRecords[random]
       } else {
         return query.Items[0]
-      } 
+      }
     } else {
       return query.Items[0]
     }
