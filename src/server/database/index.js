@@ -116,7 +116,7 @@ export const getAudioContents = async (user) => {
   }
 }
 
-export const getApprovedAudioContent = async (records = []) => {
+export const getApprovedAudioContent = async (records) => {
   try {
     const query = await docClient.query({
       TableName: DB.AUDIO_CONTENT_TABLE,
@@ -130,9 +130,17 @@ export const getApprovedAudioContent = async (records = []) => {
       }
     }).promise()
     logger('QUERY', DB.AUDIO_CONTENT_TABLE)
-    const filteredRecords = _.filter(query.Items, (record) => !_.includes(records, record.id))
-    if (filteredRecords.length) return filteredRecords[0]
-    if (!records.length || !filteredRecords.length) return query.Items[0]
+    if (records) {
+      const filteredRecords = _.filter(query.Items, (record) => !_.includes(records, record.id))
+      if (filteredRecords.length) {
+        const random = Math.floor(Math.random() * filteredRecords.length)
+        return filteredRecords[random]
+      } else {
+        return query.Items[0]
+      } 
+    } else {
+      return query.Items[0]
+    }
   } catch (error) {
     console.log(error)
   }

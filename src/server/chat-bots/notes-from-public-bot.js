@@ -98,7 +98,6 @@ export const dbot = async (event, context) => {
         }
 
         if (!_.isEmpty(user)) {
-          // if session as below, if no session repeat last question
           if (!user.consent && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.consent_yes, channelID, contact.id)
             await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'consent', true)
