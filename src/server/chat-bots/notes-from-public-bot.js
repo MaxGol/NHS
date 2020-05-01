@@ -52,8 +52,7 @@ const emailValidationCheck = (email) => {
 
 const responseHandler = (status) => {
   return {
-    statusCode: status,
-    body: JSON.stringify({ message: 'success' })
+    statusCode: status
   }
 }
 
@@ -91,24 +90,24 @@ export const dbot = async (event, context) => {
 
       if (messageType === 'text') {
         if (_.toUpper(messagePayload) === 'DELETE') {
+          const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
           await deleteUser(DB.USER_DOCTORS_TABLE, contact.id)
           await deleteSession(contact.id)
-          const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
           await sendMessage(message)
           return responseHandler('200')
         }
 
         if (!_.isEmpty(user)) {
+          // if session as below, if no session repeat last question
           if (!user.consent && isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.consent_yes, channelID, contact.id)
-            await sendMessage(message)
             await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'consent', true)
-            await updateSession(contact.id, 'consent', true)
+            await sendMessage(message)
             return responseHandler('200')
           } else if (!user.consent && _.toUpper(messagePayload) === 'NO') {
             const message = await createResponseObject('text', messages.consent_no, channelID, contact.id)
-            await sendMessage(message)
             await deleteUser(DB.USER_DOCTORS_TABLE, contact.id)
+            await sendMessage(message)
             return responseHandler('200')
           } else if (!user.consent && _.toUpper(messagePayload) !== 'NO' && !user.consent && !isAnswerYes(messagePayload)) {
             const message = await createResponseObject('text', messages.invalid_answer_consent, channelID, contact.id)
@@ -130,9 +129,8 @@ export const dbot = async (event, context) => {
             }
           } else if (user.consent && user.verificationCode) {
             if (user.verificationCode === messagePayload) {
-              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'validation', true)
-              await updateSession(contact.id, 'validation', true)
               const message = createResponseObject('text', messages.verification_code_valid, channelID, contact.id)
+              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'validation', true)
               await sendMessage(message)
               const record = await getApprovedAudioContent(user.records)
               if (_.isEmpty(record)) {
@@ -141,8 +139,8 @@ export const dbot = async (event, context) => {
                 return responseHandler('200')
               } else {
                 const audio = createResponseObject('audio', record.content, channelID, contact.id)
-                await sendMessage(audio)
                 const finalMessage = createResponseObject('text', messages.end_of_registration, channelID, contact.id)
+                await sendMessage(audio)
                 await sendMessageWithDelay(sendMessage, finalMessage, 1000)
                 await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'records', [record.id])
                 return responseHandler('200')
@@ -156,10 +154,9 @@ export const dbot = async (event, context) => {
             const messageCheck = emailValidationCheck(messagePayload)
             if (messageCheck.check) {
               const verificationCode = randomize('0', 5)
-              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'verificationCode', verificationCode)
-              await updateSession(contact.id, 'verificationCode', verificationCode)
-              await sendVerificationEmail(messagePayload, verificationCode)
               const message = await createResponseObject('text', messageCheck.message, channelID, contact.id)
+              await updateUser(DB.USER_DOCTORS_TABLE, contact.id, 'verificationCode', verificationCode)
+              await sendVerificationEmail(messagePayload, verificationCode)
               await sendMessage(message)
               return responseHandler('200')
             } else {

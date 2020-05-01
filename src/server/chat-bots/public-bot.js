@@ -41,8 +41,7 @@ const messages = {
 
 const responseHandler = (status) => {
   return {
-    statusCode: status,
-    body: JSON.stringify({ message: 'success' })
+    statusCode: status
   }
 }
 
