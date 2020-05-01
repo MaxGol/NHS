@@ -1,0 +1,26 @@
+[
+    {
+        "approved": "1",
+        "content": "https://storage.amio.io/Vn9slOouioXzrqBF2OUUx7SVOMgmJHa2ChFmp7v6XluJlUw2OeYkvzH8o6WQ.oga",
+        "created": "2020-05-01",
+        "id": "2851a4dc-650a-4f7c-8980-0dde54dba49c",
+        "ttl": 1589556039,
+        "user": "6657986452427397774"
+    },
+    {
+        "approved": "1",
+        "content": "https://storage.amio.io/4NQb6AWczWVCajbTezPsZqxN6EcxkbDfJIZBEuewRv9ipgR45rVkt8fjLrea.oga",
+        "created": "2020-05-01",
+        "id": "434e328c-686d-401f-b787-6a1631af9113",
+        "ttl": 1589556055,
+        "user": "6657986452427397774"
+    },
+    {
+        "approved": "1",
+        "content": "https://storage.amio.io/tWzCOlIdVxAA8UbPrrsIvJKYbQ5xroVWkI61N3w5lsc5IMsJYbIC2KIjhzaG.oga",
+        "created": "2020-05-01",
+        "id": "a62a8e45-b822-4485-92c1-9b67d3e3cc1b",
+        "ttl": 1589556047,
+        "user": "6657986452427397774"
+    }
+]

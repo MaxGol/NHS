@@ -7,7 +7,7 @@
     "test": "standard --fix --verbose | snazzy",
     "build": "npm run webpack:client && serverless package",
     "ngrok": "if [ -z \"${LOCAL}\" ]; then ngrok start --all --config ./ngrok.yml; fi",
-    "server": "AWS_XRAY_CONTEXT_MISSING=LOG_ERROR serverless offline start --stage development --location build/server/service",
+    "server": "AWS_XRAY_CONTEXT_MISSING=LOG_ERROR serverless offline start --stage development --location build/server/service --seed=domain",
     "start": "rm -rf build/ && npm run db:install && concurrently \"npm run server\" \"npm run ngrok\" \"npm run webpack\" \"npm run watch\"",
     "webpack": "concurrently \"webpack-dev-server --config webpack/cms.js\"",
     "webpack:client": "concurrently \"webpack --config webpack/cms.js\"",

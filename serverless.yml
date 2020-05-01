@@ -243,3 +243,8 @@ custom:
       inMemory: true
       migrate: true
       seed: true
+    seed:
+      domain:
+        sources:
+          - table: ${self:service}-${self:provider.stage}-audio-content
+            sources: [./seed/db/content-table.json]

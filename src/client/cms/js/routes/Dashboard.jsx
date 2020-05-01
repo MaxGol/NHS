@@ -60,6 +60,7 @@ export const Dashboard = () => {
                 <Grid.Column width={2} verticalAlign='middle'>NOTE {prefixedNumber(index + 1)}</Grid.Column>
                 <Grid.Column width={11}>
                   <ReactPlayer
+                    config={{ file: { attributes: { controlsList: 'nodownload' } } }}
                     className='react-player'
                     url={el.content}
                     width='100%'
