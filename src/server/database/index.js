@@ -12,34 +12,30 @@ export const logger = (...args) => {
 
 export const docClient = new DynamoDB.DocumentClient({ service: new DynamoDB({ endpoint }), convertEmptyValues: true }) // convertEmptyValues set to true
 
-export const createUser = async (table, contact) => {
+export const createUser = async (user) => {
   try {
     await docClient.put({
-      TableName: table,
+      TableName: DB.USER_TABLE,
       Item: {
-        id: contact.id,
-        user: {
-          phone: contact.phone,
-          name: contact.name,
-          created: Date.now()
-        }
+        ...user,
+        created: Date.now()
       }
     }).promise()
-    logger('PUT', table)
+    logger('PUT', DB.USER_TABLE)
   } catch (error) {
     console.log(error)
   }
 }
 
-export const getUser = async (table, id) => {
+export const getUser = async (id) => {
   try {
     const response = await docClient.get({
-      TableName: table,
+      TableName: DB.USER_TABLE,
       Key: {
         id: id
       }
     }).promise()
-    logger('GET', table)
+    logger('GET', DB.USER_TABLE)
     if (_.isEmpty(response)) return {}
     else return response.Item
   } catch (error) {
@@ -47,29 +43,30 @@ export const getUser = async (table, id) => {
   }
 }
 
-export const updateUser = async (table, id, prop, value) => {
+export const updateUser = async (id, prop, value) => {
   try {
-    await docClient.update({
-      TableName: table,
+    const updatedUser = await docClient.update({
+      TableName: DB.USER_TABLE,
       Key: { id },
       UpdateExpression: `SET #${prop} = :value`,
       ExpressionAttributeNames: { [`#${prop}`]: `${prop}` },
       ExpressionAttributeValues: { ':value': value },
-      ReturnValues: 'UPDATED_NEW'
+      ReturnValues: 'ALL_NEW'
     }).promise()
-    logger('UPDATE', table)
+    logger('UPDATE', DB.USER_TABLE)
+    return { ...updatedUser.Attributes }
   } catch (error) {
     console.log(error)
   }
 }
 
-export const deleteUser = async (table, id) => {
+export const deleteUser = async (id) => {
   try {
     await docClient.delete({
-      TableName: table,
+      TableName: DB.USER_TABLE,
       Key: { id }
     }).promise()
-    logger('DELETE', table)
+    logger('DELETE', DB.USER_TABLE)
   } catch (error) {
     console.log(error)
   }
@@ -195,7 +192,7 @@ export const updateSession = async (id, prop, value) => {
         '#ttl': 'ttl'
       },
       ExpressionAttributeValues: {
-        ':value': `${value}`,
+        ':value': value,
         ':newTTL': moment().add('1', 'hour').unix()
       },
       ReturnValues: 'UPDATED_NEW'

@@ -1,4 +1,4 @@
-import createResponseObject from '../services/createResponseObject'
+import createResponseObject from '../helpers/createResponseObject'
 import sendMessage from '../services/sendMessage'
 import isAnswerYes from '../services/isAnswerYes'
 import _ from 'lodash'
