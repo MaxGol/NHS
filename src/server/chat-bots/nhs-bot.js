@@ -1,18 +1,10 @@
 import createResponseObject from '../helpers/createResponseObject'
 import sendMessage from '../services/sendMessage'
-// import _ from 'lodash'
 import {
   getUser,
-  // createUser,
-  // deleteUser,
-  //   updateUser,
-  //   saveAudioContent,
-  // getAudioContents,
-  // deleteAllUserRecords,
   createSession,
   getSession,
   updateSession
-  // deleteSession
 } from '../database'
 
 import { getResponseStatus } from '../services/responseStatus'
@@ -44,7 +36,7 @@ export const bot = async (event, context) => {
       console.log('---> USER', user)
       console.log('---> SESSION', session)
 
-      if (!session) await createSession(contact.id, user)
+      if (!session) await createSession(contact.id, { data: user })
       else await updateSession(contact.id, 'data', { user: { ...user } })
 
       const sendMessageWithDelay = async (fn, param, ms) => {
@@ -55,7 +47,7 @@ export const bot = async (event, context) => {
         })
       }
 
-      const status = await getResponseStatus(user, session, messageType, messagePayload, channelID, contact)
+      const status = await getResponseStatus(user, session, messageType, messagePayload, contact)
       console.log('STATUS --->', status)
 
       if (status.type === 'UNHANDLED') {
@@ -64,25 +56,46 @@ export const bot = async (event, context) => {
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'DELETE') {
-        const message = createResponseObject('text', `${contact.name} has been deleted`, channelID, contact.id)
+        const message = createResponseObject('text', 'No problem, we\'ve deleted your details and voice-notes from our system', channelID, contact.id)
+        await sendMessage(message)
+        return responseHandler('200')
+      } else if (status.type === 'KILL_SESSION') {
+        const message = createResponseObject('text', 'Session deleted', channelID, contact.id)
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'USER_WANTS_TO_REGISTER_AS_PUBLIC') {
-        const image = createResponseObject('image', messages.first_time_public_user_image, channelID, session.id)
-        const message = createResponseObject('text', messages.first_time_public_user_greeting, channelID, session.id)
+        const image = createResponseObject('image', messages.FIRST_TIME_PUBLIC_USER_IMAGE, channelID, session.id)
+        const message = createResponseObject('text', messages.FIRST_TIME_PUBLIC_USER_GREETING, channelID, session.id)
         await sendMessage(image)
         await sendMessageWithDelay(sendMessage, message, 1000)
         return responseHandler('200')
       } else if (status.type === 'USER_WANTS_TO_REGISTER_AS_NHS') {
-        const image = createResponseObject('image', messages.first_time_nhs_user_image, channelID, session.id)
-        const message = createResponseObject('text', messages.first_time_nhs_user_greeting, channelID, session.id)
+        const image = createResponseObject('image', messages.FIRST_TIME_NHS_USER_IMAGE, channelID, session.id)
+        const message = createResponseObject('text', messages.FIRST_TIME_NHS_USER_GREETING, channelID, session.id)
         await sendMessage(image)
         await sendMessageWithDelay(sendMessage, message, 1000)
         return responseHandler('200')
-      } else {
-        const message = createResponseObject('text', messages[status.type], channelID, contact.id)
+      } else if (status.type === 'USER_PASSED_REGISTRATION_CAN_RECEIVE_FIRST_AUDIO') {
+        const congratsMessage = createResponseObject('text', messages.VERIFICATION_CODE_VALID, channelID, user.id)
+        const audio = createResponseObject('audio', status.record, channelID, user.id)
+        const finalMessageAfterFirstRecord = createResponseObject('text', messages.FINAL_MESSAGE_AFTER_FIRST_RECORD, channelID, contact.id)
+        await Promise.all([sendMessage(congratsMessage), sendMessageWithDelay(sendMessage, audio, 1000), sendMessageWithDelay(sendMessage, finalMessageAfterFirstRecord, 2000)])
+        return responseHandler('200')
+      } else if (status.type === 'DIFFERENT_FILE_TYPE') {
+        const random = Math.floor(Math.random() * messages.DIFFERENT_FILE_TYPE.length)
+        const message = createResponseObject('text', messages.DIFFERENT_FILE_TYPE[random], channelID, session.id)
         await sendMessage(message)
         return responseHandler('200')
+      } else {
+        if (status.record) {
+          const audio = createResponseObject('audio', status.record, channelID, user.id)
+          await sendMessage(audio)
+          return responseHandler('200')
+        } else {
+          const message = createResponseObject('text', messages[status.type], channelID, contact.id)
+          await sendMessage(message)
+          return responseHandler('200')
+        }
       }
     } else {
       console.log('--- UNHANDLED --->', request.event)

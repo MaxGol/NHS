@@ -194,8 +194,7 @@ export const updateSession = async (id, prop, value) => {
       ExpressionAttributeValues: {
         ':value': value,
         ':newTTL': moment().add('1', 'hour').unix()
-      },
-      ReturnValues: 'UPDATED_NEW'
+      }
     }).promise()
     logger('UPDATE', DB.SESSION)
   } catch (error) {
