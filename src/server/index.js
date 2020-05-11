@@ -8,9 +8,6 @@ export { bot } from './chat-bots/nhs-bot'
 const server = new ApolloServer({
   cors: true,
   schema,
-  playground: {
-    endpoint: '/development/graphql'
-  },
   context: ({ event, context }) => {
     return {
       headers: event.headers,
