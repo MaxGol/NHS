@@ -37,5 +37,6 @@ export const messages = {
   VERIFICATION_CODE_INVALID_2: '❌ That code still doesn’t look right. Please type it again...',
   VERIFICATION_CODE_INVALID_3: '❌ Ok, let’s try this a different way. Type your email address again and we’ll send you another code to try...',
   HELP: 'Having problems eh? If you\'re getting stuck, head to the help page: www.thenationalhelpservice.com/help. If you want to delete your account (which we hope you don\'t), just type "Delete" and poof, it\'ll be gone.',
-  USER_REGISTRATION_NOT_COMPLETE: 'Registration is not complete. Start again. Just type "start".'
+  USER_REGISTRATION_NOT_COMPLETE: 'Registration is not complete. Start again. Just type "start".',
+  UNHANDLED_MESSAGE_TYPE: '👀 This looks like something else. \n\n For now, you can only send us voice notes up to 20 seconds long or text. \n\nGive it another go! 🎤'
 }

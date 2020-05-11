@@ -100,36 +100,36 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
 
     // user exists, session exists, expect user to answer consent questions
     if (!_.isEmpty(user) && !_.isEmpty(session)) {
-      if (user.role === 'PUBLIC' && user.over18 === false && isAnswerYes(messagePayload)) {
-        await updateUser(user.id, 'over18', true)
+      if (user.role === 'PUBLIC' && !user.over18 && isAnswerYes(messagePayload)) {
+        await updateUser('SET', user.id, { over18: Date.now() })
         return {
           type: 'USER_IS_OVER_18'
         }
-      } else if (user.role === 'PUBLIC' && user.over18 === false && isAnswerNo(messagePayload)) {
+      } else if (user.role === 'PUBLIC' && !user.over18 && isAnswerNo(messagePayload)) {
         await deleteUser(user.id)
         await deleteSession(session.id)
         return {
           type: 'USER_IS_UNDER_18'
         }
-      } else if (user.role === 'PUBLIC' && user.over18 === false && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
+      } else if (user.role === 'PUBLIC' && !user.over18 && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
         return {
           type: 'USER_AGE_INVALID_ANSWER'
         }
       }
 
-      if ((user.role === 'PUBLIC' || user.role === 'NHS') && user.consent === false && isAnswerYes(messagePayload)) {
+      if ((user.role === 'PUBLIC' || user.role === 'NHS') && !user.consent && isAnswerYes(messagePayload)) {
         if (user.role === 'PUBLIC') {
-          await updateUser(user.id, 'consent', true)
+          await updateUser('SET', user.id, { consent: Date.now(), phone: contact.phone })
           return {
             type: 'USER_CONSENT_YES'
           }
         } else {
-          await updateUser(user.id, 'consent', true)
+          await updateUser('SET', user.id, { consent: Date.now(), phone: contact.phone })
           return {
             type: 'NHS_CONSENT_YES'
           }
         }
-      } else if ((user.role === 'PUBLIC' || user.role === 'NHS') && user.consent === false && isAnswerNo(messagePayload)) {
+      } else if ((user.role === 'PUBLIC' || user.role === 'NHS') && !user.consent && isAnswerNo(messagePayload)) {
         if (user.role === 'PUBLIC') {
           await deleteUser(user.id)
           await deleteSession(session.id)
@@ -143,17 +143,17 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
             type: 'NHS_CONSENT_NO'
           }
         }
-      } else if (user.role === 'PUBLIC' && user.consent === false && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
+      } else if (user.role === 'PUBLIC' && !user.consent && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
         if (user.role === 'PUBLIC') return { type: 'PUBLIC_INVALID_ANSWER_CONSENT' }
         else return { type: 'NHS_INVALID_ANSWER_CONSENT' }
       }
 
       // expect email, if email valid, send email to client with authCode
-      if (user.role === 'NHS' && user.consent === true && !user.authCode) {
+      if (user.role === 'NHS' && user.consent && !user.authCode) {
         const emailCheck = emailValidationCheck(messagePayload)
         if (emailCheck.valid) {
           const verificationCode = randomize('0', 5)
-          await updateUser(user.id, 'authCode', verificationCode)
+          await updateUser('SET', user.id, { authCode: verificationCode })
           await sendVerificationEmail(messagePayload, verificationCode)
           return {
             type: emailCheck.type
@@ -165,24 +165,17 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         }
       }
 
-      // NHS user shold receive an authcode via email, -if- authcode is valid, user can receive a first audio, -else- user can make 2 errors, after that ask user to resend an email
-      if (user.role === 'NHS' && user.consent === true && user.authCode && !user.authorized) {
+      // NHS user should receive an authcode via email, -if- authcode is valid, user can receive a first audio, -else- user can make 2 errors, after that ask user to resend an email
+      if (user.role === 'NHS' && user.consent && user.authCode && !user.authorized) {
         if (user.authCode === messagePayload) {
-          const userObject = {
-            id: user.id,
-            role: 'NHS',
-            consent: true,
-            authorized: true,
-            authCode: user.authCode
-          }
-          await createUser(userObject)
+          await updateUser('REMOVE', user.id, ['errors'])
           const record = await getApprovedAudioContent(user.records)
           if (_.isEmpty(record)) {
             return {
               type: 'NO_RECORDS'
             }
           } else {
-            await updateUser(user.id, 'records', [record.id])
+            await updateUser('SET', user.id, { records: [record.id] })
             return {
               type: 'USER_PASSED_REGISTRATION_CAN_RECEIVE_FIRST_AUDIO',
               record: record.content
@@ -191,23 +184,18 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         } else {
           if (user.errors) {
             if (user.errors.authorization === 1) {
-              await updateUser(user.id, 'errors', { authorization: 2 })
+              await updateUser('SET', user.id, { errors: { authorization: 2 } })
               return {
                 type: 'VERIFICATION_CODE_INVALID_2'
               }
             } else {
-              const userObject = {
-                ...user,
-                authorized: false,
-                authCode: false
-              }
-              await createUser(userObject)
+              await updateUser('SET', user.id, { authorized: false, authCode: false })
               return {
                 type: 'VERIFICATION_CODE_INVALID_3'
               }
             }
           } else {
-            await updateUser(user.id, 'errors', { authorization: 1 })
+            await updateUser('SET', user.id, { errors: { authorization: 1 } })
             return {
               type: 'VERIFICATION_CODE_INVALID_1'
             }
@@ -216,16 +204,16 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       }
 
       // expecting "YES" or "NO" from user to approve voice message
-      if (session.data.recording) {
+      if (session.recording) {
         if (isAnswerYes(messagePayload)) {
           const records = await getAudioContents(user.id)
-          await saveAudioContent(contact, session.data.recording)
-          await updateSession(session.id, 'data', { user: { ...user } })
+          await saveAudioContent(contact, session.recording)
+          await updateSession('REMOVE', session.id, ['recording'])
           return {
             type: `AUDIO_MESSAGE_CONFIRMATION_${records.Count + 1}`
           }
         } else if (isAnswerNo(messagePayload)) {
-          await updateSession(session.id, 'data', { user: { ...user } })
+          await updateSession('REMOVE', session.id, ['recording'])
           return {
             type: 'AUDIO_MESSAGE_CONFIRMATION_REJECTED'
           }
@@ -237,14 +225,14 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       }
 
       // NHS has passed all verifications and can receive audio messages right away
-      if (user.role === 'NHS' && user.consent === true && user.authCode && user.authorized === true) {
+      if (user.role === 'NHS' && user.consent && user.authCode && user.authorized) {
         const record = await getApprovedAudioContent(user.records)
         if (_.isEmpty(record)) {
           return {
             type: 'NO_RECORDS'
           }
         } else {
-          await updateUser(contact.id, 'records', [...user.records, record.id])
+          await updateUser('SET', contact.id, { records: [...user.records, record.id] })
           return {
             record: record.content
           }
@@ -252,7 +240,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       }
 
       // PUBLIC user sends text message, but expected to send audio
-      if (user.role === 'PUBLIC' && user.over18 === true && user.consent === true) {
+      if (user.role === 'PUBLIC' && user.over18 && user.consent) {
         return {
           type: 'DIFFERENT_FILE_TYPE'
         }
@@ -262,15 +250,15 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
     // user exists, session not exists -> returning user after session expired, need to repeat last step
     if (!_.isEmpty(user) && _.isEmpty(session)) {
       if (user.role === 'NHS') {
-        if (user.consent === false) {
+        if (!user.consent) {
           return {
             type: 'FIRST_TIME_NHS_USER_GREETING'
           }
-        } else if (user.authCode === false) {
+        } else if (!user.authCode) {
           return {
             type: 'NHS_CONSENT_YES'
           }
-        } else if (user.authorized === false) {
+        } else if (!user.authorized) {
           return {
             type: 'EMAIL_AUTHORIZATION_SENT'
           }
@@ -281,7 +269,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
               type: 'NO_RECORDS'
             }
           } else {
-            await updateUser(contact.id, 'records', [...user.records, record.id])
+            await updateUser('SET', contact.id, { records: [...user.records, record.id] })
             return {
               record: record.content
             }
@@ -289,11 +277,11 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         }
       }
       if (user.role === 'PUBLIC') {
-        if (user.over18 === false) {
+        if (!user.over18) {
           return {
             type: 'FIRST_TIME_PUBLIC_USER_GREETING'
           }
-        } else if (user.consent === false) {
+        } else if (!user.consent) {
           return {
             type: 'USER_IS_OVER_18'
           }
@@ -305,10 +293,10 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       }
     }
   } else if (AUDIO) {
-    if ((user.role === 'PUBLIC' && user.over18 === true && user.consent === true) || (user.role === 'NHS' && user.consent === true && user.authCode && user.authorized === true)) {
+    if ((user.role === 'PUBLIC' && user.over18 && user.consent) || (user.role === 'NHS' && user.consent && user.authCode && user.authorized)) {
       const records = await getAudioContents(user.id)
       if (records.Count < 3) {
-        await updateSession(user.id, 'data', { recording: messagePayload })
+        await updateSession('SET', user.id, { recording: messagePayload })
         return {
           type: 'USER_LEFT_VOICE_RECORDING_NOT_CONFIRMED'
         }

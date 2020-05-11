@@ -43,20 +43,46 @@ export const getUser = async (id) => {
   }
 }
 
-export const updateUser = async (id, prop, value) => {
-  try {
-    const updatedUser = await docClient.update({
-      TableName: DB.USER_TABLE,
-      Key: { id },
-      UpdateExpression: `SET #${prop} = :value`,
-      ExpressionAttributeNames: { [`#${prop}`]: `${prop}` },
-      ExpressionAttributeValues: { ':value': value },
-      ReturnValues: 'ALL_NEW'
-    }).promise()
-    logger('UPDATE', DB.USER_TABLE)
-    return { ...updatedUser.Attributes }
-  } catch (error) {
-    console.log(error)
+export const updateUser = async (action, id, props) => {
+  if (action === 'REMOVE') {
+    try {
+      const updatedUser = await docClient.update({
+        TableName: DB.USER_TABLE,
+        Key: { id },
+        UpdateExpression: `${action} ${props.map((prop) => `#${prop}`).join(', ')}`,
+        ExpressionAttributeNames: props.reduce((result, prop) => ({
+          ...result,
+          [`#${prop}`]: prop
+        }), {}),
+        ReturnValues: 'ALL_NEW'
+      }).promise()
+      logger('UPDATE', DB.USER_TABLE)
+      return { ...updatedUser.Attributes }
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    try {
+      const keys = _.keys(props)
+      const updatedUser = await docClient.update({
+        TableName: DB.USER_TABLE,
+        Key: { id },
+        UpdateExpression: `${action} ${keys.map((key) => `#${key} = :${key}`).join(', ')}`,
+        ExpressionAttributeNames: keys.reduce((result, key) => ({
+          ...result,
+          [`#${key}`]: key
+        }), {}),
+        ExpressionAttributeValues: keys.reduce((result, key) => ({
+          ...result,
+          [`:${key}`]: props[key]
+        }), {}),
+        ReturnValues: 'ALL_NEW'
+      }).promise()
+      logger('UPDATE', DB.USER_TABLE)
+      return { ...updatedUser.Attributes }
+    } catch (error) {
+      console.log(error)
+    }
   }
 }
 
@@ -181,27 +207,6 @@ export const createSession = async (id, data) => {
   }
 }
 
-export const updateSession = async (id, prop, value) => {
-  try {
-    await docClient.update({
-      TableName: DB.SESSION,
-      Key: { id },
-      UpdateExpression: `SET #ttl = :newTTL, #${prop} = :value`,
-      ExpressionAttributeNames: {
-        [`#${prop}`]: `${prop}`,
-        '#ttl': 'ttl'
-      },
-      ExpressionAttributeValues: {
-        ':value': value,
-        ':newTTL': moment().add('1', 'hour').unix()
-      }
-    }).promise()
-    logger('UPDATE', DB.SESSION)
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 export const getSession = async (id) => {
   try {
     const response = await docClient.get({
@@ -228,5 +233,52 @@ export const deleteSession = async (id) => {
     logger('DELETE', DB.SESSION)
   } catch (error) {
     console.log(error)
+  }
+}
+
+export const updateSession = async (action, id, props) => {
+  if (action === 'REMOVE') {
+    try {
+      const updatedUser = await docClient.update({
+        TableName: DB.SESSION,
+        Key: { id },
+        UpdateExpression: `${action} ${props.map((prop) => `#${prop}`).join(', ')}`,
+        ExpressionAttributeNames: props.reduce((result, prop) => ({
+          ...result,
+          [`#${prop}`]: prop
+        }), {}),
+        ReturnValues: 'ALL_NEW'
+      }).promise()
+      logger('UPDATE', DB.SESSION)
+      return { ...updatedUser.Attributes }
+    } catch (error) {
+      console.log(error)
+    }
+  } else {
+    try {
+      const propsWithTTL = {
+        ...props,
+        ttl: moment().add('1', 'hour').unix()
+      }
+      const keys = _.keys(propsWithTTL)
+      const updatedUser = await docClient.update({
+        TableName: DB.SESSION,
+        Key: { id },
+        UpdateExpression: `${action} ${keys.map((key) => `#${key} = :${key}`).join(', ')}`,
+        ExpressionAttributeNames: keys.reduce((result, key) => ({
+          ...result,
+          [`#${key}`]: key
+        }), {}),
+        ExpressionAttributeValues: keys.reduce((result, key) => ({
+          ...result,
+          [`:${key}`]: propsWithTTL[key]
+        }), {}),
+        ReturnValues: 'ALL_NEW'
+      }).promise()
+      logger('UPDATE', DB.SESSION)
+      return { ...updatedUser.Attributes }
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

@@ -3,8 +3,7 @@ import sendMessage from '../services/sendMessage'
 import {
   getUser,
   createSession,
-  getSession,
-  updateSession
+  getSession
 } from '../database'
 
 import { getResponseStatus } from '../services/responseStatus'
@@ -36,8 +35,7 @@ export const bot = async (event, context) => {
       console.log('---> USER', user)
       console.log('---> SESSION', session)
 
-      if (!session) await createSession(contact.id, { data: user })
-      else await updateSession(contact.id, 'data', { user: { ...user } })
+      if (!session) await createSession(contact.id)
 
       const sendMessageWithDelay = async (fn, param, ms) => {
         return new Promise((resolve) => {
