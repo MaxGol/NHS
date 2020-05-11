@@ -1,5 +1,6 @@
 import isAnswerYes from '../helpers/isAnswerYes'
 import isAnswerNo from '../helpers/isAnswerNo'
+import { encrypt } from '../helpers/crypto'
 import _ from 'lodash'
 import {
   createUser,
@@ -119,12 +120,12 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
 
       if ((user.role === 'PUBLIC' || user.role === 'NHS') && !user.consent && isAnswerYes(messagePayload)) {
         if (user.role === 'PUBLIC') {
-          await updateUser('SET', user.id, { consent: Date.now(), phone: contact.phone })
+          await updateUser('SET', user.id, { consent: Date.now(), phone: encrypt(contact.phone) })
           return {
             type: 'USER_CONSENT_YES'
           }
         } else {
-          await updateUser('SET', user.id, { consent: Date.now(), phone: contact.phone })
+          await updateUser('SET', user.id, { consent: Date.now(), phone: encrypt(contact.phone) })
           return {
             type: 'NHS_CONSENT_YES'
           }
