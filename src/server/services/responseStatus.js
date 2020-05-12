@@ -46,9 +46,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
   if (TEXT) {
     // if user types delete, delete user, user's session, user records
     if (_.toUpper(messagePayload) === 'DELETE') {
-      await deleteAllUserRecords(contact.id)
-      await deleteUser(contact.id)
-      await deleteSession(contact.id)
+      await Promise.all([deleteAllUserRecords(contact.id), deleteUser(contact.id), deleteSession(contact.id)])
       return {
         type: 'DELETE'
       }
@@ -107,8 +105,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
           type: 'USER_IS_OVER_18'
         }
       } else if (user.role === 'PUBLIC' && !user.over18 && isAnswerNo(messagePayload)) {
-        await deleteUser(user.id)
-        await deleteSession(session.id)
+        await Promise.all([deleteUser(user.id), deleteSession(session.id)])
         return {
           type: 'USER_IS_UNDER_18'
         }
@@ -132,14 +129,12 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         }
       } else if ((user.role === 'PUBLIC' || user.role === 'NHS') && !user.consent && isAnswerNo(messagePayload)) {
         if (user.role === 'PUBLIC') {
-          await deleteUser(user.id)
-          await deleteSession(session.id)
+          await Promise.all([deleteUser(user.id), deleteSession(session.id)])
           return {
             type: 'USER_CONSENT_NO'
           }
         } else {
-          await deleteUser(user.id)
-          await deleteSession(session.id)
+          await Promise.all([deleteUser(user.id), deleteSession(session.id)])
           return {
             type: 'NHS_CONSENT_NO'
           }
@@ -208,8 +203,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       if (session.recording) {
         if (isAnswerYes(messagePayload)) {
           const records = await getAudioContents(user.id)
-          await saveAudioContent(contact, session.recording)
-          await updateSession('REMOVE', session.id, ['recording'])
+          await Promise.all([saveAudioContent(contact, session.recording), updateSession('REMOVE', session.id, ['recording'])])
           return {
             type: `AUDIO_MESSAGE_CONFIRMATION_${records.Count + 1}`
           }

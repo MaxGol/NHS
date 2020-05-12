@@ -64,14 +64,12 @@ export const bot = async (event, context) => {
       } else if (status.type === 'USER_WANTS_TO_REGISTER_AS_PUBLIC') {
         const image = createResponseObject('image', messages.FIRST_TIME_PUBLIC_USER_IMAGE, channelID, session.id)
         const message = createResponseObject('text', messages.FIRST_TIME_PUBLIC_USER_GREETING, channelID, session.id)
-        await sendMessage(image)
-        await sendMessageWithDelay(sendMessage, message, 1000)
+        await Promise.all([sendMessage(image), sendMessageWithDelay(sendMessage, message, 1000)])
         return responseHandler('200')
       } else if (status.type === 'USER_WANTS_TO_REGISTER_AS_NHS') {
         const image = createResponseObject('image', messages.FIRST_TIME_NHS_USER_IMAGE, channelID, session.id)
         const message = createResponseObject('text', messages.FIRST_TIME_NHS_USER_GREETING, channelID, session.id)
-        await sendMessage(image)
-        await sendMessageWithDelay(sendMessage, message, 1000)
+        await Promise.all([sendMessage(image), sendMessageWithDelay(sendMessage, message, 1000)])
         return responseHandler('200')
       } else if (status.type === 'USER_PASSED_REGISTRATION_CAN_RECEIVE_FIRST_AUDIO') {
         const congratsMessage = createResponseObject('text', messages.VERIFICATION_CODE_VALID, channelID, user.id)
