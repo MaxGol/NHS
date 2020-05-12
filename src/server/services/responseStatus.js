@@ -26,15 +26,15 @@ const domainCheck = (email) => {
   return validEmailDomains.includes(domain)
 }
 
+const emailValidationCheck = (email) => {
+  if (validate(email) && domainCheck(email)) return { valid: true, type: 'EMAIL_AUTHORIZATION_SENT' }
+  else if (!validate(email)) return { valid: false, type: 'GENERIC_EMAIL_VALIDATION_ERROR' }
+  else if (!domainCheck(email)) return { valid: false, type: 'NHS_EMAIL_VALIDATION_ERROR' }
+}
+
 export const getResponseStatus = async (user, session, messageType, messagePayload, contact) => {
   const TEXT = messageType === 'text'
   const AUDIO = messageType === 'audio'
-
-  const emailValidationCheck = (email) => {
-    if (validate(email) && domainCheck(email)) return { valid: true, type: 'EMAIL_AUTHORIZATION_SENT' }
-    else if (!validate(email)) return { valid: false, type: 'GENERIC_EMAIL_VALIDATION_ERROR' }
-    else if (!domainCheck(email)) return { valid: false, type: 'NHS_EMAIL_VALIDATION_ERROR' }
-  }
 
   // new user -> no session, no user
   if (_.isEmpty(user) && _.isEmpty(session)) {
