@@ -169,7 +169,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       // NHS user should receive an authcode via email, -if- authcode is valid, user can receive a first audio, -else- user can make 2 errors, after that ask user to resend an email
       if (user.role === 'NHS' && user.consent && user.authCode && !user.authorized) {
         if (user.authCode === messagePayload) {
-          await updateUser('REMOVE', user.id, ['errors'])
+          await Promise.all([updateUser('REMOVE', user.id, ['errors']), updateUser('SET', user.id, { authorized: true })])
           const record = await getApprovedAudioContent(user.records)
           if (_.isEmpty(record)) {
             return {
