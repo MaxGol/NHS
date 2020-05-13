@@ -208,7 +208,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       // expecting "YES" or "NO" from user to approve voice message
       if (session.recording) {
         if (isAnswerYes(messagePayload)) {
-          const random = Math.floor(Math.random() * 4)
+          const random = Math.floor(Math.random() * 4) + 1
           await Promise.all([saveAudioContent(contact, session.recording), updateSession('REMOVE', session.id, ['recording'])])
           return {
             type: `AUDIO_MESSAGE_CONFIRMATION_${random}`
