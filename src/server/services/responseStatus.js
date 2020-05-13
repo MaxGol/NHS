@@ -61,7 +61,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
     }
 
     if (helperIntent(messagePayload)) {
-      return { 
+      return {
         type: 'WHAT_IS_THIS'
       }
     }
