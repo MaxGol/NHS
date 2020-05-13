@@ -54,7 +54,7 @@ export const bot = async (event, context) => {
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'DELETE') {
-        const message = createResponseObject('text', 'No problem, we\'ve deleted your details and voice-notes from our system', channelID, contact.id)
+        const message = createResponseObject('text', 'No problem, we\'ve deleted your details and voice notes from our system.', channelID, contact.id)
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'KILL_SESSION') {
@@ -82,6 +82,11 @@ export const bot = async (event, context) => {
         const message = createResponseObject('text', messages.DIFFERENT_FILE_TYPE[random], channelID, session.id)
         await sendMessage(message)
         return responseHandler('200')
+      } else if (status.type === 'NHS_USER_REQUESTS_VOICE_MESSAGE') {
+        const random = Math.floor(Math.random() * messages.NHS_USER_REQUESTS_VOICE_MESSAGE.length)
+        const message = createResponseObject('text', messages.NHS_USER_REQUESTS_VOICE_MESSAGE[random], channelID, session.id)
+        const audio = createResponseObject('audio', status.record, channelID, user.id)
+        await Promise.all([sendMessage(message), sendMessageWithDelay(sendMessage, audio, 1000)])
       } else {
         if (status.record) {
           const audio = createResponseObject('audio', status.record, channelID, user.id)

@@ -1,5 +1,6 @@
 import isAnswerYes from '../helpers/isAnswerYes'
 import isAnswerNo from '../helpers/isAnswerNo'
+import helperIntent from '../helpers/helperIntent'
 import { encrypt } from '../helpers/crypto'
 import _ from 'lodash'
 import {
@@ -56,6 +57,12 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       await deleteSession(contact.id)
       return {
         type: 'KILL_SESSION'
+      }
+    }
+
+    if (helperIntent(messagePayload)) {
+      return { 
+        type: 'WHAT_IS_THIS'
       }
     }
 
@@ -201,10 +208,10 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       // expecting "YES" or "NO" from user to approve voice message
       if (session.recording) {
         if (isAnswerYes(messagePayload)) {
-          const records = await getAudioContents(user.id)
+          const random = Math.floor(Math.random() * 4)
           await Promise.all([saveAudioContent(contact, session.recording), updateSession('REMOVE', session.id, ['recording'])])
           return {
-            type: `AUDIO_MESSAGE_CONFIRMATION_${records.Count + 1}`
+            type: `AUDIO_MESSAGE_CONFIRMATION_${random}`
           }
         } else if (isAnswerNo(messagePayload)) {
           await updateSession('REMOVE', session.id, ['recording'])
@@ -228,6 +235,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         } else {
           await updateUser('SET', contact.id, { records: [...user.records, record.id] })
           return {
+            type: 'NHS_USER_REQUESTS_VOICE_MESSAGE',
             record: record.content
           }
         }
@@ -235,8 +243,15 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
 
       // PUBLIC user sends text message, but expected to send audio
       if (user.role === 'PUBLIC' && user.over18 && user.consent) {
-        return {
-          type: 'DIFFERENT_FILE_TYPE'
+        const records = await getAudioContents(user.id)
+        if (records.Count < 3) {
+          return {
+            type: 'DIFFERENT_FILE_TYPE'
+          }
+        } else {
+          return {
+            type: 'USER_HAS_LEFT_THREE_VOICE_RECORDINGS_RETURNING_TEXT'
+          }
         }
       }
     }
