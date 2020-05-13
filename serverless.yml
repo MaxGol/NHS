@@ -26,25 +26,6 @@ functions:
           cors: true
           method: post
           path: bot/webhook/amio
-  # pbot:
-  #   handler: src/server/index.pbot
-  #   timeout: 10
-  #   memorySize: 2048
-  #   events:
-  #     - http:
-  #         cors: true
-  #         method: post
-  #         path: pbot/webhook/amio
-
-  # dbot:
-  #   handler: src/server/index.dbot
-  #   timeout: 10
-  #   memorySize: 2048
-  #   events:
-  #     - http:
-  #         cors: true
-  #         method: post
-  #         path: dbot/webhook/amio
 
   graphql:
     handler: src/server/index.handler
@@ -124,26 +105,24 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
+          - AttributeName: phone
+            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: UserPhoneIndex
+            KeySchema:
+              - AttributeName: phone
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-
-    # usersDoctors: 
-    #   Type: AWS::DynamoDB::Table
-    #   Properties:
-    #     TableName: ${self:service}-${self:provider.stage}-users-doctors
-    #     AttributeDefinitions:
-    #       - AttributeName: id
-    #         AttributeType: S
-    #     KeySchema:
-    #       - AttributeName: id
-    #         KeyType: HASH
-    #     ProvisionedThroughput:
-    #       ReadCapacityUnits: 1
-    #       WriteCapacityUnits: 1
   
     admin:
       Type: AWS::DynamoDB::Table

@@ -149,8 +149,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         const emailCheck = emailValidationCheck(messagePayload)
         if (emailCheck.valid) {
           const verificationCode = randomize('0', 5)
-          await updateUser('SET', user.id, { authCode: verificationCode })
-          await sendVerificationEmail(messagePayload, verificationCode)
+          await Promise.all([updateUser('SET', user.id, { authCode: verificationCode }), sendVerificationEmail(messagePayload, verificationCode)])
           return {
             type: emailCheck.type
           }

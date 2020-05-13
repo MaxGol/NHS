@@ -1,7 +1,6 @@
 import { Mutations } from './mutation-type'
 import { Queries } from './query-type'
 import {
-  UserInput,
   User,
   AdminInput,
   Admin,
@@ -12,7 +11,6 @@ import {
 } from './type'
 
 export const typeDefs = [
-  UserInput,
   User,
   AdminInput,
   Admin,

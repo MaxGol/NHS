@@ -4,21 +4,13 @@ export const Scalar = gql`
   scalar Date
 `
 
-export const UserInput = gql`
-  input UserInput {
-    id: ID!,
-    platform: String!,
-    created: Date,
-    last_used_at: Date
-  }
-`
-
 export const User = gql`
   type User {
-    id: ID,
-    platform: String,
-    created: Date,
-    last_used_at: Date
+    id: ID!,
+    consent: Int!,
+    created: Int!,
+    over18: Int!,
+    phone: String!
   }
 `
 
