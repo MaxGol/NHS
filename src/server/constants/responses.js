@@ -12,7 +12,7 @@ export const messages = {
   USER_AGE_INVALID_ANSWER: '🤔 Sorry, I’m not sure I understood you. Just type ‘Yes’ of you are over 18 or ‘No’ if you are not yet 18.',
   USER_CONSENT_YES: 'Time to send a voice note and brighten someone’s day! They won\'t be able to respond but trust us, it’s amazingly powerful for our NHS heroes to actually hear you speaking your support.  🙏 Words of wisdom, encouragement or just a simple thank you will all go down a treat! \n\nOver to you...🎤',
   USER_CONSENT_NO: 'No worries, ping us here, if you change your mind. Stay indoors and stay safe.🏠',
-  NHS_CONSENT_YES: 'Great! To make sure the messages get to the right place, I need to confirm that you’re working for the NHS. \n\n💌What is your work email? We will send you a 5-digit code to verify your email account (don’t worry, we won’t store it or use it for any other purposes)',
+  NHS_CONSENT_YES: 'Great! To make sure the messages get to the right place, I need to confirm that you’re working for the NHS. \n\n💌What is your work email? \n\nWe will send you a 5-digit code to verify your email account (don’t worry, we won’t store it or use it for any other purposes)',
   NHS_CONSENT_NO: 'No worries, ping us here, if you change your mind. Stay safe 🏠',
   EMAIL_AUTHORIZATION_SENT: 'Thanks! We’ve sent you an email. \n\nWhat is your 5-digit code?',
   GENERIC_EMAIL_VALIDATION_ERROR: 'Hmm, that doesn\'t look like a valid NHS email address. Try typing that again...',
@@ -23,12 +23,12 @@ export const messages = {
   AUDIO_MESSAGE_CONFIRMATION_4: 'Thanks so much 🌈 This will be sent to those you need to hear it most. Send us another note if you fancy.',
   AUDIO_MESSAGE_CONFIRMATION_REJECTED: 'No worries. Give it another go now you’ve had a practise run! 🎤',
   AUDIO_MESSAGE_CONFIRMATION_INCORRECT_ANSWER: 'Just type \'Yes\' if you\'re happy for your voice note to be sent or No to record another one.',
-  RETURNING_PUBLIC_USER_TEXT: '🌈 Let’s spread the love! Record your voice message for our wonderful NHS staff. \n\nJust like last time: \n\n⏱The notes can be up to 20 seconds long \n\n🚨For medical assistance contact your GP, as you won’t be able to reach the NHS through this platform 💖Keep it positive to lift the spirit of those working hard on the frontline. \n\nOver to you 🎤',
+  RETURNING_PUBLIC_USER_TEXT: '🌈 Let’s spread the love! Record your voice message for our wonderful NHS staff. \n\nJust like last time: \n\n⏱The notes can be up to 20 seconds long \n\n❤️Keep it positive to lift the spirits of those working hard on the frontline to keep us all safe. \n\nOver to you 🎤',
   USER_HAS_LEFT_THREE_VOICE_RECORDINGS: 'Thanks for sharing the love! \n💖We can only accept 3 voice notes a day per person. \nCome back again tomorrow to send another if you’d like to though! 🎤',
   USER_HAS_LEFT_THREE_VOICE_RECORDINGS_RETURNING_TEXT: 'Love the enthusiasm! But you\'ve maxed out for today on your 3 voice notes. Come back again tomorrow to send more. In the mean-time, please share this number with others to keep spreading the love🌈',
   USER_LEFT_VOICE_RECORDING_NOT_CONFIRMED: 'Nice one! Are you happy for this to be shared with our NHS front-line? Type \'Yes\' or \'No\'.',
   DIFFERENT_FILE_TYPE: [
-    '👀 This looks like something else. \n\n For now, you can only send us voice notes up to 20 seconds long. \n\n Just hold down the record button and then hit send. Give it another go! 🎤',
+    '👀 This looks like something else. For now, you can only send us voice notes up to 20 seconds long. \n\n Just hold down the record button and then hit send. Give it another go! 🎤',
     '👀 Hhmm, we\'re only looking for 20 second voice notes for now. Try that again 🎤',
     '🌈 Send our NHS heroes a real, spoken thank you. Just hold down the record button and then hit send...'
   ],

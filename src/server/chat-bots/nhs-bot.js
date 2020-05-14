@@ -99,7 +99,7 @@ export const bot = async (event, context) => {
         }
       }
     } else {
-      console.log('--- UNHANDLED --->', request.event)
+      console.log('UNHANDLED --->', request.event)
       return responseHandler('200')
     }
   } catch (error) {
