@@ -2,6 +2,7 @@ import isAnswerYes from '../helpers/isAnswerYes'
 import isAnswerNo from '../helpers/isAnswerNo'
 import helperIntent from '../helpers/helperIntent'
 import { encrypt } from '../helpers/crypto'
+import { logIncoming } from '../services/dashbot'
 import _ from 'lodash'
 import {
   createUser,
@@ -39,6 +40,10 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
 
   // new user -> no session, no user
   if (_.isEmpty(user) && _.isEmpty(session)) {
+    logIncoming({
+      text: 'FIRST TIME USER',
+      userId: contact.id
+    })
     return {
       type: 'FIRST_TIME_USER'
     }
@@ -47,6 +52,13 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
   if (TEXT) {
     // if user types delete, delete user, user's session, user records
     if (_.toUpper(messagePayload) === 'DELETE') {
+      logIncoming({
+        text: user.role || 'FIRST TIME USER',
+        userId: contact.id,
+        intent: {
+          name: 'DELETE'
+        }
+      })
       await Promise.all([deleteAllUserRecords(contact.id), deleteUser(contact.id), deleteSession(contact.id)])
       return {
         type: 'DELETE'
@@ -61,12 +73,26 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
     }
 
     if (helperIntent(messagePayload)) {
+      logIncoming({
+        text: user.role || 'FIRST TIME USER',
+        userId: contact.id,
+        intent: {
+          name: 'ABOUT'
+        }
+      })
       return {
         type: 'WHAT_IS_THIS'
       }
     }
 
     if (_.toUpper(messagePayload) === 'HELP') {
+      logIncoming({
+        text: user.role || 'FIRST TIME USER',
+        userId: contact.id,
+        intent: {
+          name: 'HELP'
+        }
+      })
       return {
         type: 'HELP'
       }
@@ -208,6 +234,13 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       // expecting "YES" or "NO" from user to approve voice message
       if (session.recording) {
         if (isAnswerYes(messagePayload)) {
+          logIncoming({
+            text: user.role,
+            userId: contact.id,
+            intent: {
+              name: 'USER CONFIRMS VOICE MESSAGE'
+            }
+          })
           const random = Math.floor(Math.random() * 4) + 1
           await Promise.all([saveAudioContent(contact, session.recording), updateSession('REMOVE', session.id, ['recording'])])
           return {
@@ -227,6 +260,13 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
 
       // NHS has passed all verifications and can receive audio messages right away
       if (user.role === 'NHS' && user.consent && user.authCode && user.authorized) {
+        logIncoming({
+          text: user.role,
+          userId: contact.id,
+          intent: {
+            name: 'USER REQUESTS VOICE MESSAGE'
+          }
+        })
         const record = await getApprovedAudioContent(user.records)
         if (_.isEmpty(record)) {
           return {
@@ -303,6 +343,13 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
     }
   } else if (AUDIO) {
     if ((user.role === 'PUBLIC' && user.over18 && user.consent) || (user.role === 'NHS' && user.consent && user.authCode && user.authorized)) {
+      logIncoming({
+        text: user.role,
+        userId: contact.id,
+        intent: {
+          name: 'USER SENDS VOICE MESSAGE'
+        }
+      })
       const records = await getAudioContents(user.id)
       if (records.Count < 3) {
         await updateSession('SET', user.id, { recording: messagePayload })
