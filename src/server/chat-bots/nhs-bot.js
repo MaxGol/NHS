@@ -99,6 +99,7 @@ export const bot = async (event, context) => {
         const message = createResponseObject('text', messages.NHS_USER_REQUESTS_VOICE_MESSAGE[random], channelID, session.id)
         const audio = createResponseObject('audio', status.record, channelID, user.id)
         await Promise.all([sendMessage(message), sendMessageWithDelay(sendMessage, audio, 1000)])
+        return responseHandler('200')
       } else {
         if (status.record) {
           const audio = createResponseObject('audio', status.record, channelID, user.id)
