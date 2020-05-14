@@ -15,6 +15,7 @@ provider:
     ACCESS_TOKEN_SECRET: ${file(./env.yml):${self:provider.stage}.ACCESS_TOKEN_SECRET}
     BOT_ACCESS_TOKEN: ${file(./env.yml):${self:provider.stage}.BOT_ACCESS_TOKEN}
     NODE_ENV: ${file(./env.yml):${self:provider.stage}.NODE_ENV}
+    SIGNATURE_TOKEN: ${file(./env.yml):${self:provider.stage}.SIGNATURE_TOKEN}
 
 functions:
   bot: 

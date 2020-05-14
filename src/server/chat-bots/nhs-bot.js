@@ -1,5 +1,6 @@
 import createResponseObject from '../helpers/createResponseObject'
 import sendMessage from '../services/sendMessage'
+import { calculateXHubSignature } from '../helpers/crypto'
 import {
   getUser,
   createSession,
@@ -9,6 +10,7 @@ import {
 import { getResponseStatus } from '../services/responseStatus'
 import { messages } from '../constants/responses'
 
+const amioToken = process.env.SIGNATURE_TOKEN
 const responseHandler = (status) => {
   return {
     statusCode: status
@@ -18,7 +20,16 @@ const responseHandler = (status) => {
 export const bot = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false
   const request = JSON.parse(event.body)
-  console.log('---> REQUEST', request)
+  console.log('REQUEST --->', event.body)
+
+  const signature = calculateXHubSignature(amioToken, event.body)
+  const isRequestFromAmioServer = signature === event.headers['X-Hub-Signature']
+
+  if (!isRequestFromAmioServer) {
+    console.log('REQUEST CAME NOT FROM AMIO SERVER --->', request)
+    return responseHandler('400')
+  }
+
   try {
     if (request.event === 'message_received') {
       const channelID = request.data.channel.id
@@ -33,8 +44,8 @@ export const bot = async (event, context) => {
       const user = await getUser(contact.id)
       const session = await getSession(contact.id)
 
-      console.log('---> USER', user)
-      console.log('---> SESSION', session)
+      console.log('USER --->', user)
+      console.log('SESSION ---> ', session)
 
       if (!session) await createSession(contact.id)
 
