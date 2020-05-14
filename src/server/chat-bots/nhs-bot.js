@@ -18,6 +18,7 @@ const responseHandler = (status) => {
 export const bot = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false
   const request = JSON.parse(event.body)
+  console.log('---> REQUEST', request)
   try {
     if (request.event === 'message_received') {
       const channelID = request.data.channel.id
