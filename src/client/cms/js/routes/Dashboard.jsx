@@ -35,9 +35,9 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (data && data.getAllVoiceRecords) {
-      setDataChunks(_.chunk(data.getAllVoiceRecords, 10))
+      setDataChunks(_.chunk(data.getAllVoiceRecords, 20))
       setRecords({
-        data: _.chunk(data.getAllVoiceRecords, 10)[0],
+        data: _.chunk(data.getAllVoiceRecords, 20)[0],
         index: 0
       })
     }
@@ -64,7 +64,7 @@ export const Dashboard = () => {
   }
 
   return (
-    <Container style={{ height: '100vh', marginTop: '30px' }}>
+    <Container style={{ height: '100%', marginTop: '30px', marginBottom: '30px' }} textAlign='center'>
       {_.map(records.data, (el, index) => {
         return (
           <Segment loading={loading} tertiary style={{ marginBottom: '10px' }} key={el.id}>
@@ -91,7 +91,7 @@ export const Dashboard = () => {
         )
       })}
       {dataChunks.length >= 2 &&
-        <Grid.Row columns={1} className='margin-top-20' centered>
+        <Grid.Row columns={1} style={{ marginTop: '30px' }} centered>
           <Grid.Column width={16} textAlign='center'>
             <Pagination
               boundaryRange={0}
