@@ -50,6 +50,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-audio-content
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -103,6 +109,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-users
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -129,6 +141,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-admin
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -155,6 +173,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-session
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S

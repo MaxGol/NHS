@@ -64,7 +64,7 @@ export const Dashboard = () => {
   }
 
   return (
-    <Container style={{ height: '100%', marginTop: '30px', marginBottom: '30px' }} textAlign='center'>
+    <Container style={{ height: '100%', marginTop: '30px', marginBottom: '30px' }}>
       {_.map(records.data, (el, index) => {
         return (
           <Segment loading={loading} tertiary style={{ marginBottom: '10px' }} key={el.id}>
