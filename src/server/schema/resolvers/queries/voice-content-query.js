@@ -16,10 +16,11 @@ export const getAllVoiceRecords = async (parent, args, context, info) => {
         return {
           id: item.id,
           content: item.content,
-          approved: item.approved
+          approved: item.approved,
+          ttl: item.ttl
         }
       })
-      return voiceRecords
+      return _.reverse(_.sortby(voiceRecords, 'ttl'))
     }
   } catch (error) {
     console.log(error)

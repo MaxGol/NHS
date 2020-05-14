@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { GET_ALL_RECORDS } from 'schema/query'
 import { UPDATE_RECORD } from 'schema/mutation'
-import { Container, Segment, Grid, Checkbox } from 'semantic-ui-react'
+import { Container, Segment, Grid, Checkbox, Pagination } from 'semantic-ui-react'
 import ReactPlayer from 'react-player'
 import _ from 'lodash'
 
 export const Dashboard = () => {
-  const [records, setRecords] = useState([])
+  const [records, setRecords] = useState({
+    data: [],
+    index: 0
+  })
   const { loading, data } = useQuery(GET_ALL_RECORDS, { pollInterval: 60000 })
+  const [dataChunks, setDataChunks] = useState([])
+
   const [updateVoiceRecord] = useMutation(
     UPDATE_RECORD,
     {
@@ -30,9 +35,17 @@ export const Dashboard = () => {
 
   useEffect(() => {
     if (data && data.getAllVoiceRecords) {
-      setRecords(data.getAllVoiceRecords)
+      setDataChunks(_.chunk(data.getAllVoiceRecords, 10))
+      setRecords({
+        data: _.chunk(data.getAllVoiceRecords, 10)[0],
+        index: 0
+      })
     }
   }, [data])
+
+  const onPageChangeHandler = (activePage) => {
+    setRecords({ data: dataChunks[activePage - 1], index: activePage === 1 ? 0 : (activePage - 1) * 10 })
+  }
 
   const handleChange = async (record, value) => {
     const newRecord = {
@@ -52,12 +65,12 @@ export const Dashboard = () => {
 
   return (
     <Container style={{ height: '100vh', marginTop: '30px' }}>
-      {_.map(records, (el, index) => {
+      {_.map(records.data, (el, index) => {
         return (
           <Segment loading={loading} tertiary style={{ marginBottom: '10px' }} key={el.id}>
             <Grid>
               <Grid.Row>
-                <Grid.Column width={2} verticalAlign='middle'>NOTE {prefixedNumber(index + 1)}</Grid.Column>
+                <Grid.Column width={2} verticalAlign='middle'>NOTE {prefixedNumber(index + records.index + 1)}</Grid.Column>
                 <Grid.Column width={11}>
                   <ReactPlayer
                     config={{ file: { attributes: { controlsList: 'nodownload' } } }}
@@ -77,6 +90,21 @@ export const Dashboard = () => {
           </Segment>
         )
       })}
+      {dataChunks.length >= 2 &&
+        <Grid.Row columns={1} className='margin-top-20' centered>
+          <Grid.Column width={16} textAlign='center'>
+            <Pagination
+              boundaryRange={0}
+              defaultActivePage={1}
+              ellipsisItem={null}
+              firstItem={null}
+              lastItem={null}
+              siblingRange={1}
+              totalPages={dataChunks.length}
+              onPageChange={(e, { activePage }) => onPageChangeHandler(activePage)}
+            />
+          </Grid.Column>
+        </Grid.Row>}
     </Container>
   )
 }

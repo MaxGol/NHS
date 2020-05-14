@@ -48,6 +48,7 @@ export const VoiceRecord = gql`
   type VoiceRecord {
     id: ID!,
     content: String!,
-    approved: String!
+    approved: String!,
+    ttl: Int
   }
 `
