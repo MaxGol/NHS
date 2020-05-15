@@ -44,7 +44,18 @@ export const Dashboard = () => {
   }, [data])
 
   const onPageChangeHandler = (activePage) => {
-    setRecords({ data: dataChunks[activePage - 1], index: activePage === 1 ? 0 : (activePage - 1) * 10 })
+    setRecords({ data: dataChunks[activePage - 1], index: activePage === 1 ? 0 : createIndex(activePage) })
+  }
+
+  const createIndex = (activePage) => {
+    switch (true) {
+      case activePage === 2:
+        return 20
+      case activePage > 2:
+        return (activePage - 1) * 20
+      default:
+        return 1
+    }
   }
 
   const handleChange = async (record, value) => {
