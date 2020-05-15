@@ -18,6 +18,7 @@ import {
 import randomize from 'randomatic'
 import { validate } from 'email-validator'
 import { sendVerificationEmail } from '../services/email/sendVerificationEmail'
+import { sendAnalytics } from '../services/analytics'
 
 const validEmailDomains = ['nhs.net', 'nhs.uk', 'hscni.net', 'hscni.net', 'scot.nhs.net', 'wales.nhs.et', 'voxlydigital.com']
 
@@ -178,6 +179,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
             }
           } else {
             await updateUser('SET', user.id, { records: [record.id] })
+            sendAnalytics(user, 'User Requests Voice Message')
             return {
               type: 'USER_PASSED_REGISTRATION_CAN_RECEIVE_FIRST_AUDIO',
               record: record.content
@@ -210,6 +212,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
         if (isAnswerYes(messagePayload)) {
           const random = Math.floor(Math.random() * 4) + 1
           await Promise.all([saveAudioContent(contact, session.recording), updateSession('REMOVE', session.id, ['recording'])])
+          sendAnalytics(user, 'User Approves Voice Message')
           return {
             type: `AUDIO_MESSAGE_CONFIRMATION_${random}`
           }
@@ -234,6 +237,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
           }
         } else {
           await updateUser('SET', contact.id, { records: [...user.records, record.id] })
+          sendAnalytics(user, 'User Requests Voice Message')
           return {
             type: 'NHS_USER_REQUESTS_VOICE_MESSAGE',
             record: record.content
@@ -306,6 +310,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
       const records = await getAudioContents(user.id)
       if (records.Count < 3) {
         await updateSession('SET', user.id, { recording: messagePayload })
+        sendAnalytics(user, 'User Creates Voice Message')
         return {
           type: 'USER_LEFT_VOICE_RECORDING_NOT_CONFIRMED'
         }

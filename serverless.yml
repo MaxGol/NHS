@@ -16,6 +16,8 @@ provider:
     BOT_ACCESS_TOKEN: ${file(./env.yml):${self:provider.stage}.BOT_ACCESS_TOKEN}
     NODE_ENV: ${file(./env.yml):${self:provider.stage}.NODE_ENV}
     SIGNATURE_TOKEN: ${file(./env.yml):${self:provider.stage}.SIGNATURE_TOKEN}
+    PUBLIC_BOT_ANALYTICS: ${file(./env.yml):${self:provider.stage}.PUBLIC_BOT_ANALYTICS}
+    DOCTOR_BOT_ANALYTICS: ${file(./env.yml):${self:provider.stage}.DOCTOR_BOT_ANALYTICS}
 
 functions:
   bot: 
