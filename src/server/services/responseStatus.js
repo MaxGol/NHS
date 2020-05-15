@@ -82,6 +82,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
           over18: false,
           consent: false
         }
+        sendAnalytics(userObject, 'User Entry')
         await createUser(userObject)
         return {
           type: 'USER_WANTS_TO_REGISTER_AS_PUBLIC'
@@ -94,6 +95,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
           authorized: false,
           authCode: false
         }
+        sendAnalytics(userObject, 'User Entry')
         await createUser(userObject)
         return {
           type: 'USER_WANTS_TO_REGISTER_AS_NHS'
