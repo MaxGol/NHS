@@ -14,7 +14,7 @@ DOCTOR BOT
 -------------------------------------------------- */
 
 export const sendAnalytics = (user, event) => {
-  if (process.env.STAGE === 'PRODUCTION' || process.env.STAGE === 'STAGING') {
+  if (process.env.STAGE === 'production') {
     const GA_ID = user.role === 'PUBLIC' ? process.env.PUBLIC_BOT_ANALYTICS : process.env.DOCTOR_BOT_ANALYTICS
     const userId = user.id
 
@@ -25,6 +25,8 @@ export const sendAnalytics = (user, event) => {
       t: 'event',
       ec: event
     }
+
+    console.log('Sending Google Analytics --->', params)
 
     return axios.post('https://www.google-analytics.com/collect', null, { params })
   } else {
