@@ -60,9 +60,8 @@ export const bot = async (event, context) => {
       const status = await getResponseStatus(user, session, messageType, messagePayload, contact)
       console.log('STATUS --->', status)
 
-      if (status.type === 'UNHANDLED') {
-        console.log('Something went wrong', status.user, status.session)
-        const message = createResponseObject('text', 'Sorry I did not catch that, please try again', channelID, contact.id)
+      if (status.type === 'ERROR') {
+        const message = createResponseObject('text', 'Oops, something went wrong on our side but we\'re working to fix it. Please try again a bit later on.', channelID, contact.id)
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'DELETE') {

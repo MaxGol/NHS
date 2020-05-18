@@ -43,3 +43,25 @@ export const sendVerificationEmail = (emailAddress, data) => {
   })
   return promise
 }
+
+export const sendErrorEmail = (error) => {
+  const promise = new Promise((resolve, reject) => {
+    ses.sendEmail({
+      Destination: generateDestination(['max.g@voxlydigital.com', 'rozzi.meredith@voxlydigital.com', 'freshthinking@voxlydigital.com']),
+      Source: 'support@thenationalhopeservice.com',
+      Message: {
+        Body: {
+          Text: {
+            Charset: 'UTF-8',
+            Data: `${error.message}`
+          }
+        },
+        Subject: {
+          Charset: 'UTF-8',
+          Data: 'Error from NHS Bot'
+        }
+      }
+    }, responseHandler(resolve, reject))
+  })
+  return promise
+}
