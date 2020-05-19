@@ -1,5 +1,6 @@
 import createResponseObject from '../helpers/createResponseObject'
 import sendMessage from '../services/sendMessage'
+import { calculateXHubSignature } from '../helpers/crypto'
 import {
   getUser,
   createSession,
@@ -9,6 +10,7 @@ import {
 import { getResponseStatus } from '../services/responseStatus'
 import { messages } from '../constants/responses'
 
+const amioToken = process.env.SIGNATURE_TOKEN
 const responseHandler = (status) => {
   return {
     statusCode: status
@@ -18,6 +20,16 @@ const responseHandler = (status) => {
 export const bot = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false
   const request = JSON.parse(event.body)
+  console.log('REQUEST --->', event.body)
+
+  const signature = calculateXHubSignature(amioToken, event.body)
+  const isRequestFromAmioServer = signature === event.headers['X-Hub-Signature']
+
+  if (!isRequestFromAmioServer) {
+    console.log('REQUEST CAME NOT FROM AMIO SERVER --->', request)
+    return responseHandler('400')
+  }
+
   try {
     if (request.event === 'message_received') {
       const channelID = request.data.channel.id
@@ -32,8 +44,8 @@ export const bot = async (event, context) => {
       const user = await getUser(contact.id)
       const session = await getSession(contact.id)
 
-      console.log('---> USER', user)
-      console.log('---> SESSION', session)
+      console.log('USER --->', user)
+      console.log('SESSION ---> ', session)
 
       if (!session) await createSession(contact.id)
 
@@ -48,13 +60,12 @@ export const bot = async (event, context) => {
       const status = await getResponseStatus(user, session, messageType, messagePayload, contact)
       console.log('STATUS --->', status)
 
-      if (status.type === 'UNHANDLED') {
-        console.log('Something went wrong', status.user, status.session)
-        const message = createResponseObject('text', 'Sorry I did not catch that, please try again', channelID, contact.id)
+      if (status.type === 'ERROR') {
+        const message = createResponseObject('text', 'Oops, something went wrong on our side but we\'re working to fix it. Please try again a bit later on.', channelID, contact.id)
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'DELETE') {
-        const message = createResponseObject('text', 'No problem, we\'ve deleted your details and voice-notes from our system', channelID, contact.id)
+        const message = createResponseObject('text', 'No problem, we\'ve deleted your details and voice notes from our system.', channelID, contact.id)
         await sendMessage(message)
         return responseHandler('200')
       } else if (status.type === 'KILL_SESSION') {
@@ -82,6 +93,12 @@ export const bot = async (event, context) => {
         const message = createResponseObject('text', messages.DIFFERENT_FILE_TYPE[random], channelID, session.id)
         await sendMessage(message)
         return responseHandler('200')
+      } else if (status.type === 'NHS_USER_REQUESTS_VOICE_MESSAGE') {
+        const random = Math.floor(Math.random() * messages.NHS_USER_REQUESTS_VOICE_MESSAGE.length)
+        const message = createResponseObject('text', messages.NHS_USER_REQUESTS_VOICE_MESSAGE[random], channelID, session.id)
+        const audio = createResponseObject('audio', status.record, channelID, user.id)
+        await Promise.all([sendMessage(message), sendMessageWithDelay(sendMessage, audio, 1000)])
+        return responseHandler('200')
       } else {
         if (status.record) {
           const audio = createResponseObject('audio', status.record, channelID, user.id)
@@ -94,7 +111,7 @@ export const bot = async (event, context) => {
         }
       }
     } else {
-      console.log('--- UNHANDLED --->', request.event)
+      console.log('UNHANDLED --->', request.event)
       return responseHandler('200')
     }
   } catch (error) {

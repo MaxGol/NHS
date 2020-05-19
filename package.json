@@ -36,6 +36,7 @@
     "bcrypt": "^3.0.7",
     "bcryptjs": "^2.4.3",
     "classnames": "^2.2.6",
+    "dashbot": "^11.1.0",
     "date-fns": "^2.8.1",
     "email-validator": "^2.0.4",
     "express": "^4.17.1",

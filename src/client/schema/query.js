@@ -12,6 +12,7 @@ query getAllVoiceRecords {
     id
     approved
     content
+    ttl
   }
 }
 `

@@ -23,7 +23,7 @@ export const createUser = async (user) => {
     }).promise()
     logger('PUT', DB.USER_TABLE)
   } catch (error) {
-    console.log(error)
+    throw new Error(`Create user error: ${error.message}`)
   }
 }
 
@@ -40,6 +40,7 @@ export const getUser = async (id) => {
     else return response.Item
   } catch (error) {
     console.log(error)
+    throw new Error(`Get user error: ${error.message}`)
   }
 }
 
@@ -60,6 +61,7 @@ export const updateUser = async (action, id, props) => {
       return { ...updatedUser.Attributes }
     } catch (error) {
       console.log(error)
+      throw new Error(`Update user error: ${error.message}`)
     }
   } else {
     try {
@@ -82,6 +84,7 @@ export const updateUser = async (action, id, props) => {
       return { ...updatedUser.Attributes }
     } catch (error) {
       console.log(error)
+      throw new Error(`Update user error: ${error.message}`)
     }
   }
 }
@@ -95,6 +98,7 @@ export const deleteUser = async (id) => {
     logger('DELETE', DB.USER_TABLE)
   } catch (error) {
     console.log(error)
+    throw new Error(`Delete user error: ${error.message}`)
   }
 }
 
@@ -114,6 +118,7 @@ export const saveAudioContent = async (contact, payload) => {
     logger('PUT', DB.AUDIO_CONTENT_TABLE)
   } catch (error) {
     console.log(error)
+    throw new Error(`Save voice record: ${error.message}`)
   }
 }
 
@@ -136,6 +141,7 @@ export const getAudioContents = async (user) => {
     return query
   } catch (error) {
     console.log(error)
+    throw new Error(`Get voice record: ${error.message}`)
   }
 }
 
@@ -166,6 +172,7 @@ export const getApprovedAudioContent = async (records) => {
     }
   } catch (error) {
     console.log(error)
+    throw new Error(`Get approved voice records: ${error.message}`)
   }
 }
 
@@ -178,15 +185,20 @@ export const deleteAudioRecord = async (id) => {
     logger('DELETE', DB.AUDIO_CONTENT_TABLE)
   } catch (error) {
     console.log(error)
+    throw new Error(`Delete voice record: ${error.message}`)
   }
 }
 
 export const deleteAllUserRecords = async (id) => {
-  const records = await getAudioContents(id)
-  if (records) {
-    _.forEach(records.Items, async (item) => {
-      await deleteAudioRecord(item.id)
-    })
+  try {
+    const records = await getAudioContents(id)
+    if (records) {
+      _.forEach(records.Items, async (item) => {
+        await deleteAudioRecord(item.id)
+      })
+    }
+  } catch (error) {
+    throw new Error(`Delete all user voice records: ${error.message}`)
   }
 }
 
@@ -204,6 +216,7 @@ export const createSession = async (id, data) => {
     logger('PUT', DB.SESSION)
   } catch (error) {
     console.log(error)
+    throw new Error(`Create session: ${error.message}`)
   }
 }
 
@@ -221,6 +234,7 @@ export const getSession = async (id) => {
     else return response.Item
   } catch (error) {
     console.log(error)
+    throw new Error(`Get session: ${error.message}`)
   }
 }
 
@@ -233,6 +247,7 @@ export const deleteSession = async (id) => {
     logger('DELETE', DB.SESSION)
   } catch (error) {
     console.log(error)
+    throw new Error(`Delete session: ${error.message}`)
   }
 }
 
@@ -253,6 +268,7 @@ export const updateSession = async (action, id, props) => {
       return { ...updatedUser.Attributes }
     } catch (error) {
       console.log(error)
+      throw new Error(`Update session: ${error.message}`)
     }
   } else {
     try {
@@ -279,6 +295,7 @@ export const updateSession = async (action, id, props) => {
       return { ...updatedUser.Attributes }
     } catch (error) {
       console.log(error)
+      throw new Error(`Update session: ${error.message}`)
     }
   }
 }

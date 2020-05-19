@@ -15,3 +15,9 @@ export const decrypt = (data) => {
   const decipher = crypto.createDecipheriv('AES-128-CBC', binaryEncryptionKey, binaryIV)
   return decipher.update(data, 'base64', 'utf8') + decipher.final('utf8')
 }
+
+export const calculateXHubSignature = (secret, body) => {
+  const hmac = crypto.createHmac('sha1', secret)
+  hmac.update(body)
+  return `sha1=${hmac.digest('hex')}`
+}

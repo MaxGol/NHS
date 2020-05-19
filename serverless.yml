@@ -15,6 +15,9 @@ provider:
     ACCESS_TOKEN_SECRET: ${file(./env.yml):${self:provider.stage}.ACCESS_TOKEN_SECRET}
     BOT_ACCESS_TOKEN: ${file(./env.yml):${self:provider.stage}.BOT_ACCESS_TOKEN}
     NODE_ENV: ${file(./env.yml):${self:provider.stage}.NODE_ENV}
+    SIGNATURE_TOKEN: ${file(./env.yml):${self:provider.stage}.SIGNATURE_TOKEN}
+    PUBLIC_BOT_ANALYTICS: ${file(./env.yml):${self:provider.stage}.PUBLIC_BOT_ANALYTICS}
+    DOCTOR_BOT_ANALYTICS: ${file(./env.yml):${self:provider.stage}.DOCTOR_BOT_ANALYTICS}
 
 functions:
   bot: 
@@ -49,6 +52,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-audio-content
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -102,6 +111,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-users
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -128,6 +143,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-admin
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
@@ -154,6 +175,12 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         TableName: ${self:service}-${self:provider.stage}-session
+        PointInTimeRecoverySpecification:
+          PointInTimeRecoveryEnabled: true
+        SSESpecification:
+          SSEEnabled: true
+        StreamSpecification:
+          StreamViewType: NEW_AND_OLD_IMAGES
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
