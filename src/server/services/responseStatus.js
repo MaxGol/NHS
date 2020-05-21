@@ -2,6 +2,7 @@ import isAnswerYes from '../helpers/isAnswerYes'
 import isAnswerNo from '../helpers/isAnswerNo'
 import helperIntent from '../helpers/helperIntent'
 import { encrypt } from '../helpers/crypto'
+import { emailValidationCheck } from '../helpers/emailValidation'
 import _ from 'lodash'
 import {
   createUser,
@@ -16,23 +17,8 @@ import {
 } from '../database'
 
 import randomize from 'randomatic'
-import { validate } from 'email-validator'
 import { sendVerificationEmail, sendErrorEmail } from '../services/email/sendVerificationEmail'
 import { sendAnalytics } from '../services/analytics'
-
-const validEmailDomains = ['nhs.net', 'nhs.uk', 'hscni.net', 'hscni.net', 'scot.nhs.net', 'wales.nhs.et', 'voxlydigital.com']
-
-const domainCheck = (email) => {
-  const splitEmail = email.split('@')
-  const domain = splitEmail[splitEmail.length - 1]
-  return validEmailDomains.includes(domain)
-}
-
-const emailValidationCheck = (email) => {
-  if (validate(email) && domainCheck(email)) return { valid: true, type: 'EMAIL_AUTHORIZATION_SENT' }
-  else if (!validate(email)) return { valid: false, type: 'GENERIC_EMAIL_VALIDATION_ERROR' }
-  else if (!domainCheck(email)) return { valid: false, type: 'NHS_EMAIL_VALIDATION_ERROR' }
-}
 
 const handleError = async (error) => {
   await sendErrorEmail(error)
