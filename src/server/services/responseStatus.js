@@ -143,7 +143,7 @@ export const getResponseStatus = async (user, session, messageType, messagePaylo
               type: 'NHS_CONSENT_NO'
             }
           }
-        } else if (user.role === 'PUBLIC' && !user.consent && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
+        } else if ((user.role === 'PUBLIC' || user.role === 'NHS') && !user.consent && (!isAnswerNo(messagePayload) || !isAnswerYes(messagePayload))) {
           if (user.role === 'PUBLIC') return { type: 'PUBLIC_INVALID_ANSWER_CONSENT' }
           else return { type: 'NHS_INVALID_ANSWER_CONSENT' }
         }
