@@ -112,7 +112,7 @@ export const saveAudioContent = async (contact, payload) => {
         content: payload.url,
         approved: '0',
         created: moment(new Date()).format('YYYY-MM-DD').toString(),
-        ttl: moment().add('2', 'weeks').unix()
+        ttl: moment().add('1', 'years').unix()
       }
     }).promise()
     logger('PUT', DB.AUDIO_CONTENT_TABLE)
